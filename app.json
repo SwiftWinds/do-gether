@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "accountability-todo-list",
-    "slug": "accountability-todo-list",
+    "name": "dogether",
+    "slug": "dogether",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
