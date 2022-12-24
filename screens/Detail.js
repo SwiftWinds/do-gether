@@ -5,12 +5,12 @@ import { useNavigation } from "@react-navigation/native";
 
 const Detail = ({ route }) => {
   const todosRef = firebase.firestore().collection("todos");
-  const [todoTitle, setTodoTitle] = useState("");
+  const [todoTitle, setTodoTitle] = useState(route.params.item.title);
   const navigation = useNavigation();
   const updateTodo = () => {
     if (todoTitle) {
       todosRef
-        .doc(route.params.todo.id)
+        .doc(route.params.item.id)
         .update({
           title: todoTitle,
         })
