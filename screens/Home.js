@@ -22,7 +22,6 @@ const Home = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    console.log("useEffect called")
     todosRef.orderBy("createdAt", "desc").onSnapshot(
       (querySnapshot) => {
         const todos = [];
@@ -31,7 +30,7 @@ const Home = () => {
           todos.push({
             id: doc.id,
             title,
-            finished
+            finished,
           });
         });
         setTodos(todos);
@@ -55,13 +54,11 @@ const Home = () => {
   };
 
   const toggleTodo = (todo) => {
-    console.log("old state: ", todo.finished)
     const finished = !todo.finished;
-    console.log("new state: ", finished)
     todosRef
       .doc(todo.id)
       .update({
-        finished
+        finished,
       })
       .then(() => {
         alert("Finished task successfully!");
@@ -82,14 +79,13 @@ const Home = () => {
       });
   };
 
-
   const addTodo = () => {
     if (addData) {
       const timestamp = firebase.firestore.FieldValue.serverTimestamp();
       const data = {
         title: addData,
         createdAt: timestamp,
-        finished: false
+        finished: false,
       };
       todosRef
         .add(data)
@@ -134,8 +130,7 @@ const Home = () => {
               color="black"
               onPress={() => {
                 toggleTodo(item);
-              }
-              }
+              }}
               style={styles.todoIcon}
             />*/}
             <Ionicons
@@ -171,26 +166,26 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'e5e5e5',
+    backgroundColor: "e5e5e5",
     padding: 15,
     borderRadius: 15,
     margin: 5,
     marginHorizontal: 10,
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: "row",
+    alignItems: "center",
   },
   innerContainer: {
-    alignItems: "flex-start",
+    alignItems: "center",
+    flexDirection: "column",
     marginLeft: 45,
-    flex: 1,
   },
   itemHeading: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 18,
     marginRight: 22,
   },
   formContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 80,
     marginLeft: 10,
     marginRight: 10,
@@ -199,8 +194,8 @@ const styles = StyleSheet.create({
   input: {
     height: 48,
     borderRadius: 5,
-    overflow: 'hidden',
-    backgroundColor: 'white',
+    overflow: "hidden",
+    backgroundColor: "white",
     paddingLeft: 16,
     flex: 1,
     marginRight: 5,
@@ -208,23 +203,18 @@ const styles = StyleSheet.create({
   button: {
     height: 47,
     borderRadius: 5,
-    backgroundColor: '#788eec',
+    backgroundColor: "#788eec",
     width: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonText: {
-    color: 'white',
-    fontSize: 20
+    color: "white",
+    fontSize: 20,
   },
   todoIcon: {
     marginTop: 5,
     fontSize: 20,
     marginLeft: 14,
   },
-  deleteIcon: {
-    marginTop: 5,
-    fontSize: 20,
-    marginRight: 14,
-  },
-})
+});
