@@ -10,23 +10,24 @@ import {
 } from "react-native";
 import {
   ActionSheetProvider,
-  connectActionSheet,
-  ActionSheetProps,
-} from '@expo/react-native-action-sheet';
+  useActionSheet,
+} from "@expo/react-native-action-sheet";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState, useEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../config";
-import ShowActionSheetButton from './ShowActionSheetButton';
-import { usseActionSheet } from '@expo/react-native-action-sheet';
 
 const Home = () => {
   const [todos, setTodos] = useState([]);
-  const todosRef = firebase.firestore().collection("todos");
   const [addData, setAddData] = useState("");
+
   const navigation = useNavigation();
+
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const todosRef = firebase.firestore().collection("todos");
 
   useEffect(() => {
     todosRef.orderBy("createdAt", "desc").onSnapshot(
@@ -47,6 +48,26 @@ const Home = () => {
       }
     );
   }, []);
+
+  const addTodo = () => {
+    if (addData) {
+      const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+      const data = {
+        title: addData,
+        createdAt: timestamp,
+        finished: false,
+      };
+      todosRef
+        .add(data)
+        .then(() => {
+          setAddData("");
+          Keyboard.dismiss();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
 
   const deleteTodo = (todo) => {
     todosRef
@@ -86,42 +107,39 @@ const Home = () => {
       });
   };
 
-  const addTodo = () => {
-    if (addData) {
-      const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-      const data = {
-        title: addData,
-        createdAt: timestamp,
-        finished: false,
-      };
-      todosRef
-        .add(data)
-        .then(() => {
-          setAddData("");
-          Keyboard.dismiss();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
+  const askForImage = () => {
+    const options = ["Take a photo", "Choose from library", "Cancel"];
+    const cancelButtonIndex = 2;
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          console.log("Take a photo");
+          // takePhotoAsync();
+        } else if (buttonIndex === 1) {
+          pickImageAsync();
+        }
+      }
+    );
   };
+
   const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
     });
     if (!result.canceled) {
       console.log(result);
     } else {
-      alert('You did not select any image.');
+      alert("You did not select any image.");
     }
   };
 
-  const ConnectedApp = connectActionSheet < any > (App);
-
   return (
-
-    <ActionSheetProvider useCustomActionSheet={useCustomActionSheet}>
+    <ActionSheetProvider>
       <View style={{ flex: 1 }}>
         <View style={styles.formContainer}>
           <TextInput
@@ -142,49 +160,26 @@ const Home = () => {
           data={todos}
           numColumns={1}
           renderItem={({ item }) => (
-            <View
-              style={styles.container}
-            >
-              {/*<FontAwesome
-              name={item.finished ? "check-square-o" : "square-o"}
-              size={24}
-              color="black"
-              onPress={() => {
-                toggleTodo(item);
-              }}
-              style={styles.todoIcon}
-            />*/}
+            <View style={styles.container}>
               <Ionicons
-                name={item.finished ? "md-hourglass-outline" : "md-square-outline"}
+                name={
+                  item.finished ? "md-hourglass-outline" : "md-square-outline"
+                }
                 size={24}
                 color="black"
-
                 onPress={() => {
-                  toggleTodo(item);
-                  if (finished === true) {
-                    //actionsheet will be shown
-                    const options = ['Camera', 'Gallery', 'Cancel'];
-                    const cancelButtonIndex = 2;
-
-                    showActionSheetWithOptions({
-                      options,
-                      cancelButtonIndex,
-                    },
-                      (selectedIndex: number) => { //idk help not typescript file so can't use type annotations?
-                        switch (selectedIndex) {
-                          case 1:
-                            pickImageAsync();
-                            break;
-                          case cancelButtonIndex:
-                          //Cancel
-                        }
-
-                      })
+                  if (finished === false) {
+                    askForImage();
+                  } else {
+                    toggleTodo();
                   }
                 }}
                 style={styles.todoIcon}
               />
-              <Pressable style={styles.innerContainer} onPress={() => navigation.navigate("Detail", { item })}>
+              <Pressable
+                style={styles.innerContainer}
+                onPress={() => navigation.navigate("Detail", { item })}
+              >
                 <Text style={styles.itemHeading}>
                   {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
                 </Text>
@@ -220,7 +215,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     flexDirection: "column",
     marginLeft: 45,
-    flex: 1
+    flex: 1,
   },
   itemHeading: {
     fontWeight: "bold",
