@@ -24,6 +24,9 @@ export default StyleSheet.create({
   lightText: {
     color: "#fff",
   },
+  errorText: {
+    color: "#f00",
+  },
   header: {
     fontSize: 20,
   },
