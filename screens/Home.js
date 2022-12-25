@@ -108,6 +108,7 @@ const Home = () => {
   };
 
   const askForImage = () => {
+    console.log("asking for image");
     const options = ["Take a photo", "Choose from library", "Cancel"];
     const cancelButtonIndex = 2;
     showActionSheetWithOptions(
@@ -139,63 +140,61 @@ const Home = () => {
   };
 
   return (
-    <ActionSheetProvider>
-      <View style={{ flex: 1 }}>
-        <View style={styles.formContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder={"Add a new todo"}
-            placeholderTextColor={"#aaaaaa"}
-            onChangeText={(text) => setAddData(text)}
-            value={addData}
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
-            onSubmitEditing={addTodo}
-          />
-          <TouchableOpacity style={styles.button} onPress={addTodo}>
-            <Text style={styles.buttonText}>Add</Text>
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          data={todos}
-          numColumns={1}
-          renderItem={({ item }) => (
-            <View style={styles.container}>
-              <Ionicons
-                name={
-                  item.finished ? "md-hourglass-outline" : "md-square-outline"
-                }
-                size={24}
-                color="black"
-                onPress={() => {
-                  if (finished === false) {
-                    askForImage();
-                  } else {
-                    toggleTodo();
-                  }
-                }}
-                style={styles.todoIcon}
-              />
-              <Pressable
-                style={styles.innerContainer}
-                onPress={() => navigation.navigate("Detail", { item })}
-              >
-                <Text style={styles.itemHeading}>
-                  {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
-                </Text>
-              </Pressable>
-              <FontAwesome
-                name="trash-o"
-                size={24}
-                color="red"
-                onPress={() => deleteTodo(item)}
-                style={styles.deleteIcon}
-              />
-            </View>
-          )}
+    <View style={{ flex: 1 }}>
+      <View style={styles.formContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder={"Add a new todo"}
+          placeholderTextColor={"#aaaaaa"}
+          onChangeText={(text) => setAddData(text)}
+          value={addData}
+          underlineColorAndroid="transparent"
+          autoCapitalize="none"
+          onSubmitEditing={addTodo}
         />
+        <TouchableOpacity style={styles.button} onPress={addTodo}>
+          <Text style={styles.buttonText}>Add</Text>
+        </TouchableOpacity>
       </View>
-    </ActionSheetProvider>
+      <FlatList
+        data={todos}
+        numColumns={1}
+        renderItem={({ item }) => (
+          <View style={styles.container}>
+            <Ionicons
+              name={
+                item.finished ? "md-hourglass-outline" : "md-square-outline"
+              }
+              size={24}
+              color="black"
+              onPress={() => {
+                if (item.finished === false) {
+                  askForImage();
+                } else {
+                  toggleTodo();
+                }
+              }}
+              style={styles.todoIcon}
+            />
+            <Pressable
+              style={styles.innerContainer}
+              onPress={() => navigation.navigate("Detail", { item })}
+            >
+              <Text style={styles.itemHeading}>
+                {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
+              </Text>
+            </Pressable>
+            <FontAwesome
+              name="trash-o"
+              size={24}
+              color="red"
+              onPress={() => deleteTodo(item)}
+              style={styles.deleteIcon}
+            />
+          </View>
+        )}
+      />
+    </View>
   );
 };
 
