@@ -175,9 +175,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   innerContainer: {
-    alignItems: "center",
+    alignItems: "flex-start",
     flexDirection: "column",
     marginLeft: 45,
+    flex: 1
   },
   itemHeading: {
     fontWeight: "bold",
