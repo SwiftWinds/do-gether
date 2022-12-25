@@ -8,12 +8,19 @@ import {
   Keyboard,
   Pressable,
 } from "react-native";
+import {
+  ActionSheetProvider,
+  connectActionSheet,
+  ActionSheetProps,
+} from '@expo/react-native-action-sheet';
+import * as ImagePicker from "expo-image-picker";
 import React, { useState, useEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
-
 import { firebase } from "../config";
+import ShowActionSheetButton from './ShowActionSheetButton';
+import { usseActionSheet } from '@expo/react-native-action-sheet';
 
 const Home = () => {
   const [todos, setTodos] = useState([]);
@@ -61,7 +68,7 @@ const Home = () => {
         finished,
       })
       .then(() => {
-        alert("Finished task successfully!");
+        alert("Toggled successfully!");
         setTodos(
           todos.map((item) => {
             if (item.id === todo.id) {
@@ -98,33 +105,47 @@ const Home = () => {
         });
     }
   };
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      console.log(result);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  const ConnectedApp = connectActionSheet < any > (App);
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.formContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder={"Add a new todo"}
-          placeholderTextColor={"#aaaaaa"}
-          onChangeText={(text) => setAddData(text)}
-          value={addData}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
-          onSubmitEditing={addTodo}
-        />
-        <TouchableOpacity style={styles.button} onPress={addTodo}>
-          <Text style={styles.buttonText}>Add</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={todos}
-        numColumns={1}
-        renderItem={({ item }) => (
-          <Pressable
-            style={styles.container}
-            onPress={() => navigation.navigate("Detail", { item })}
-          >
-            {/*<FontAwesome
+
+    <ActionSheetProvider useCustomActionSheet={useCustomActionSheet}>
+      <View style={{ flex: 1 }}>
+        <View style={styles.formContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder={"Add a new todo"}
+            placeholderTextColor={"#aaaaaa"}
+            onChangeText={(text) => setAddData(text)}
+            value={addData}
+            underlineColorAndroid="transparent"
+            autoCapitalize="none"
+            onSubmitEditing={addTodo}
+          />
+          <TouchableOpacity style={styles.button} onPress={addTodo}>
+            <Text style={styles.buttonText}>Add</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={todos}
+          numColumns={1}
+          renderItem={({ item }) => (
+            <View
+              style={styles.container}
+            >
+              {/*<FontAwesome
               name={item.finished ? "check-square-o" : "square-o"}
               size={24}
               color="black"
@@ -133,32 +154,53 @@ const Home = () => {
               }}
               style={styles.todoIcon}
             />*/}
-            <Ionicons
-              name={item.finished ? "md-hourglass-outline": "md-square-outline"}
-              size={24}
-              color="black"
-              onPress={() => {
-                toggleTodo(item);
-              }
-              }
-              style={styles.todoIcon}
-            />
-            <View style={styles.innerContainer}>
-              <Text style={styles.itemHeading}>
-                {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
-              </Text>
+              <Ionicons
+                name={item.finished ? "md-hourglass-outline" : "md-square-outline"}
+                size={24}
+                color="black"
+
+                onPress={() => {
+                  toggleTodo(item);
+                  if (finished === true) {
+                    //actionsheet will be shown
+                    const options = ['Camera', 'Gallery', 'Cancel'];
+                    const cancelButtonIndex = 2;
+
+                    showActionSheetWithOptions({
+                      options,
+                      cancelButtonIndex,
+                    },
+                      (selectedIndex: number) => { //idk help not typescript file so can't use type annotations?
+                        switch (selectedIndex) {
+                          case 1:
+                            pickImageAsync();
+                            break;
+                          case cancelButtonIndex:
+                          //Cancel
+                        }
+
+                      })
+                  }
+                }}
+                style={styles.todoIcon}
+              />
+              <Pressable style={styles.innerContainer} onPress={() => navigation.navigate("Detail", { item })}>
+                <Text style={styles.itemHeading}>
+                  {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
+                </Text>
+              </Pressable>
+              <FontAwesome
+                name="trash-o"
+                size={24}
+                color="red"
+                onPress={() => deleteTodo(item)}
+                style={styles.deleteIcon}
+              />
             </View>
-            <FontAwesome
-              name="trash-o"
-              size={24}
-              color="red"
-              onPress={() => deleteTodo(item)}
-              style={styles.deleteIcon}
-            />
-          </Pressable>
-        )}
-      />
-    </View>
+          )}
+        />
+      </View>
+    </ActionSheetProvider>
   );
 };
 
