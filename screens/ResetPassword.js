@@ -15,7 +15,6 @@ export default function Login() {
   const backgroundImg = require("../assets/background.jpg");
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
   const navigation = useNavigation();
 
@@ -23,7 +22,7 @@ export default function Login() {
     <ImageBackground style={AppStyles.container} source={backgroundImg}>
       <View style={AppStyles.backgroundCover}>
         <Text style={[AppStyles.lightText, AppStyles.header]}>
-          Log in to Dogether
+          Reset your password
         </Text>
         <TextInput
           style={[
@@ -36,27 +35,12 @@ export default function Login() {
           onChangeText={setEmail}
           value={email}
         />
-        <TextInput
-          style={[
-            AppStyles.textInput,
-            AppStyles.lightTextInput,
-            AppStyles.lightText,
-          ]}
-          placeholder="Password"
-          placeholderTextColor={"#bebebe"}
-          secureTextEntry={true}
-          onChangeText={setPassword}
-          value={password}
-        />
-        <View style={AppStyles.rowContainer}>
-          <InlineBtn onPress={() => navigation.navigate("ResetPassword")}>Forgot your password?</InlineBtn>
-        </View>
         <TouchableOpacity style={AppStyles.btn} underlayColor="#fff">
           <Text
             style={[AppStyles.lightText, AppStyles.loginBtnText]}
             onPress={() => navigation.navigate("Home")}
           >
-            Login
+            Reset password
           </Text>
         </TouchableOpacity>
         <View style={AppStyles.rowContainer}>
