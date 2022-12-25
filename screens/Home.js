@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 
 import { firebase } from "../config";
@@ -127,8 +128,18 @@ const Home = () => {
             style={styles.container}
             onPress={() => navigation.navigate("Detail", { item })}
           >
-            <FontAwesome
+            {/*<FontAwesome
               name={item.finished ? "check-square-o" : "square-o"}
+              size={24}
+              color="black"
+              onPress={() => {
+                toggleTodo(item);
+              }
+              }
+              style={styles.todoIcon}
+            />*/}
+            <Ionicons
+              name={item.finished ? "md-hourglass-outline": "md-square-outline"}
               size={24}
               color="black"
               onPress={() => {
