@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 export default StyleSheet.create({
   container: {
@@ -32,6 +32,11 @@ export default StyleSheet.create({
     padding: 8,
     borderBottomWidth: 2,
     marginVertical: 8,
+    ...Platform.select({
+      web: {
+        outlineStyle: "none",
+      },
+    }),
   },
   lightTextInput: {
     borderBottomColor: "#fff",
@@ -47,6 +52,8 @@ export default StyleSheet.create({
     borderRadius: 3,
     padding: 9,
     marginVertical: 9,
+  },
+  loginBtnText: {
     textTransform: "uppercase",
   },
 });
