@@ -51,17 +51,20 @@ export default function Login() {
         <View style={AppStyles.rowContainer}>
           <InlineBtn onPress={() => navigation.navigate("ResetPassword")}>Forgot your password?</InlineBtn>
         </View>
-        <TouchableOpacity style={AppStyles.btn} underlayColor="#fff">
-          <Text
-            style={[AppStyles.lightText, AppStyles.loginBtnText]}
-            onPress={() => navigation.navigate("Home")}
-          >
-            Login
+        <TouchableOpacity
+          style={AppStyles.btn}
+          underlayColor="#fff"
+          onPress={() => navigation.navigate("Home")}
+        >
+          <Text style={[AppStyles.lightText, AppStyles.loginBtnText]}>
+            Log in
           </Text>
         </TouchableOpacity>
         <View style={AppStyles.rowContainer}>
           <Text style={AppStyles.lightText}>Don't have an account yet? </Text>
-          <InlineBtn>Sign up</InlineBtn>
+          <InlineBtn onPress={() => navigation.navigate("Signup")}>
+            Sign up
+          </InlineBtn>
         </View>
       </View>
     </ImageBackground>
