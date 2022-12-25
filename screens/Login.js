@@ -41,7 +41,7 @@ export default function Login() {
           <InlineBtn>Forgot your password?</InlineBtn>
         </View>
         <TouchableOpacity style={AppStyles.btn} underlayColor="#fff">
-          <Text style={AppStyles.lightText}>Login</Text>
+          <Text style={[AppStyles.lightText, AppStyles.loginBtnText]}>Login</Text>
         </TouchableOpacity>
         <View style={AppStyles.rowContainer}>
           <Text style={AppStyles.lightText}>Don't have an account yet? </Text>
