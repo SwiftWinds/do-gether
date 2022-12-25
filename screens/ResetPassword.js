@@ -11,7 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import InlineBtn from "../components/InlineBtn";
 import AppStyles from "../styles/AppStyles";
 
-export default function Login() {
+export default function ResetPassword() {
   const backgroundImg = require("../assets/background.jpg");
 
   const [email, setEmail] = useState("");
@@ -45,7 +45,9 @@ export default function Login() {
         </TouchableOpacity>
         <View style={AppStyles.rowContainer}>
           <Text style={AppStyles.lightText}>Don't have an account yet? </Text>
-          <InlineBtn>Sign up</InlineBtn>
+          <InlineBtn onPress={() => navigation.navigate("Signup")}>
+            Sign up
+          </InlineBtn>
         </View>
       </View>
     </ImageBackground>
