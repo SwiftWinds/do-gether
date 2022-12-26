@@ -1,7 +1,8 @@
-import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
-import React, { useState } from "react";
-import { firebase } from "../config";
 import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
+
+import { firebase } from "../config";
 
 const Detail = ({ route }) => {
   const todosRef = firebase.firestore().collection("todos");
@@ -30,7 +31,7 @@ const Detail = ({ route }) => {
         style={styles.textInput}
         value={todoTitle}
         onChangeText={(text) => setTodoTitle(text)}
-        placeholder={"Update todo"}
+        placeholder="Update todo"
       />
       <Pressable style={styles.buttonUpdate} onPress={() => updateTodo()}>
         <Text style={styles.buttonText}>Update todo</Text>
