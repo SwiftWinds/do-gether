@@ -1,3 +1,5 @@
+import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -5,8 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 
 import InlineBtn from "../components/InlineBtn";
 import AppStyles from "../styles/AppStyles";
@@ -31,7 +31,7 @@ export default function ResetPassword() {
             AppStyles.lightText,
           ]}
           placeholder="Email"
-          placeholderTextColor={"#bebebe"}
+          placeholderTextColor="#bebebe"
           onChangeText={setEmail}
           value={email}
         />
