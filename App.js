@@ -17,13 +17,19 @@ export default function App() {
     <ActionSheetProvider>
       <NavigationContainer
         linking={{
+          prefixes: ["https://dogether.gg", "dogether://"],
           config: {
             screens: {
               Login: "login",
               Signup: "signup",
               ResetPassword: "reset-password",
               Home: "home",
-              Detail: "detail/:id",
+              Detail: {
+                path: "detail/:item",
+                stringify: {
+                  item: (item) => item.id,
+                },
+              },
             },
           },
         }}
