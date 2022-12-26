@@ -70,9 +70,6 @@ const Todo = () => {
     todosRef
       .doc(todo.id)
       .delete()
-      .then(() => {
-        alert("Deleted successfully!");
-      })
       .catch((error) => {
         console.log(error);
       });
@@ -86,7 +83,6 @@ const Todo = () => {
         finished,
       })
       .then(() => {
-        alert("Toggled successfully!");
         setTodos(
           todos.map((item) => {
             if (item.id === todo.id) {

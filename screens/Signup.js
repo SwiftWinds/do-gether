@@ -48,11 +48,11 @@ export default function Signup() {
     const { user } = userCredentials;
     console.log(user);
     await sendEmailVerification(user);
-    navigation.navigate("Home");
+    navigation.navigate("VerifyEmail");
   };
 
   return (
-    <ImageBackground style={AppStyles.container} source={backgroundImg}>
+    <ImageBackground style={AppStyles.imageContainer} source={backgroundImg}>
       <View style={AppStyles.backgroundCover}>
         <Text style={[AppStyles.lightText, AppStyles.header]}>
           Create a Dogether account

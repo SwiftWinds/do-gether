@@ -47,7 +47,7 @@ export default function Login() {
   };
 
   return (
-    <ImageBackground style={AppStyles.container} source={backgroundImg}>
+    <ImageBackground style={AppStyles.imageContainer} source={backgroundImg}>
       <View style={AppStyles.backgroundCover}>
         <Text style={[AppStyles.lightText, AppStyles.header]}>
           Log in to Dogether

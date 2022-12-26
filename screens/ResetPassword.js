@@ -33,7 +33,7 @@ export default function ResetPassword() {
   };
 
   return (
-    <ImageBackground style={AppStyles.container} source={backgroundImg}>
+    <ImageBackground style={AppStyles.imageContainer} source={backgroundImg}>
       <View style={AppStyles.backgroundCover}>
         <Text style={[AppStyles.lightText, AppStyles.header]}>
           Reset your password
