@@ -158,12 +158,25 @@ const Home = () => {
       (buttonIndex) => {
         if (buttonIndex === 0) {
           console.log("Take a photo");
-          // takePhotoAsync();
+          takePhotoAsync();
         } else if (buttonIndex === 1) {
           pickImageAsync();
         }
       }
     );
+  };
+
+  const takePhotoAsync = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      console.log(result);
+      uploadImage(result.assets[0].uri);
+    } else {
+      alert("You did not take any photo.");
+    }
   };
 
   const pickImageAsync = async () => {
