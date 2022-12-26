@@ -14,7 +14,7 @@ const Settings = () => {
   };
 
   return (
-    <View style={AppStyles.container}>
+    <View style={AppStyles.imageContainer}>
       <Button title="Logout" onPress={logout} />
     </View>
   );

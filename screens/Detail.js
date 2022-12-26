@@ -16,7 +16,6 @@ const Detail = ({ route }) => {
           title: todoTitle,
         })
         .then(() => {
-          alert("Updated successfully!");
           navigation.navigate("Home");
         })
         .catch((error) => {
