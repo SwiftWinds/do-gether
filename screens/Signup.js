@@ -1,3 +1,7 @@
+import { useNavigation } from "@react-navigation/native";
+import to from "await-to-js";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -5,10 +9,9 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 
 import InlineBtn from "../components/InlineBtn";
+import { auth } from "../config";
 import AppStyles from "../styles/AppStyles";
 
 export default function Signup() {
@@ -17,16 +20,34 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [validationMsg, setValidationMsg] = useState("");
+
+  const [errorMsg, setErrorMsg] = useState("");
 
   const navigation = useNavigation();
 
   const validate = () => {
     if (password !== confirmPassword) {
-      setValidationMsg("Passwords do not match");
+      setErrorMsg("Passwords do not match");
+    } else if (!email || !password || !confirmPassword) {
+      setErrorMsg("Please fill in all fields");
     } else {
-      setValidationMsg("");
+      setErrorMsg("");
+      signUp();
     }
+  };
+
+  const signUp = async () => {
+    // we cannot destructure userCredentials.user here because it will crash if userCredentials is undefined
+    const [error, userCredentials] = await to(
+      createUserWithEmailAndPassword(auth, email, password)
+    );
+    if (error) {
+      setErrorMsg(error.message);
+      return;
+    }
+    const { user } = userCredentials;
+    console.log(user);
+    navigation.navigate("Home");
   };
 
   return (
@@ -42,7 +63,7 @@ export default function Signup() {
             AppStyles.lightText,
           ]}
           placeholder="Email"
-          placeholderTextColor={"#bebebe"}
+          placeholderTextColor="#bebebe"
           onChangeText={setEmail}
           value={email}
         />
@@ -53,8 +74,8 @@ export default function Signup() {
             AppStyles.lightText,
           ]}
           placeholder="Password"
-          placeholderTextColor={"#bebebe"}
-          secureTextEntry={true}
+          placeholderTextColor="#bebebe"
+          secureTextEntry
           onChangeText={setPassword}
           value={password}
         />
@@ -65,13 +86,13 @@ export default function Signup() {
             AppStyles.lightText,
           ]}
           placeholder="Confirm Password"
-          placeholderTextColor={"#bebebe"}
-          secureTextEntry={true}
+          placeholderTextColor="#bebebe"
+          secureTextEntry
           onChangeText={setConfirmPassword}
           value={confirmPassword}
         />
         <View>
-          <Text style={AppStyles.errorText}>{validationMsg}</Text>
+          <Text style={AppStyles.errorText}>{errorMsg}</Text>
         </View>
         <TouchableOpacity
           style={AppStyles.btn}
