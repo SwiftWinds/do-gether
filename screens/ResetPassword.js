@@ -1,4 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
+import to from "await-to-js";
+import { sendPasswordResetEmail } from "firebase/auth";
 import React, { useState } from "react";
 import {
   View,
@@ -9,6 +11,7 @@ import {
 } from "react-native";
 
 import InlineBtn from "../components/InlineBtn";
+import { auth } from "../config";
 import AppStyles from "../styles/AppStyles";
 
 export default function ResetPassword() {
@@ -16,7 +19,18 @@ export default function ResetPassword() {
 
   const [email, setEmail] = useState("");
 
+  const [errorMsg, setErrorMsg] = useState("");
+
   const navigation = useNavigation();
+
+  const resetPassword = async () => {
+    const [error] = await to(sendPasswordResetEmail(auth, email));
+    if (error) {
+      setErrorMsg(error.message);
+      return;
+    }
+    navigation.navigate("Login");
+  };
 
   return (
     <ImageBackground style={AppStyles.container} source={backgroundImg}>
@@ -24,6 +38,7 @@ export default function ResetPassword() {
         <Text style={[AppStyles.lightText, AppStyles.header]}>
           Reset your password
         </Text>
+        <Text style={AppStyles.errorMsg}>{errorMsg}</Text>
         <TextInput
           style={[
             AppStyles.textInput,
@@ -38,7 +53,7 @@ export default function ResetPassword() {
         <TouchableOpacity style={AppStyles.btn} underlayColor="#fff">
           <Text
             style={[AppStyles.lightText, AppStyles.loginBtnText]}
-            onPress={() => navigation.navigate("Home")}
+            onPress={resetPassword}
           >
             Reset password
           </Text>

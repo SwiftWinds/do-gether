@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import React, { useState } from "react";
 import {
   View,
@@ -47,6 +47,7 @@ export default function Signup() {
     }
     const { user } = userCredentials;
     console.log(user);
+    await sendEmailVerification(user);
     navigation.navigate("Home");
   };
 
