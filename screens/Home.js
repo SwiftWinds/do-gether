@@ -1,3 +1,8 @@
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,15 +13,7 @@ import {
   Keyboard,
   Pressable,
 } from "react-native";
-import {
-  ActionSheetProvider,
-  useActionSheet,
-} from "@expo/react-native-action-sheet";
-import * as ImagePicker from "expo-image-picker";
-import React, { useState, useEffect } from "react";
-import { FontAwesome } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+
 import { firebase } from "../config";
 
 const Home = () => {
@@ -107,6 +104,48 @@ const Home = () => {
       });
   };
 
+  const getBlobFromUri = async (uri) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function () {
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+  };
+
+  const uploadImage = async (imageUri) => {
+    const blob = await getBlobFromUri(imageUri);
+
+    const storageRef = firebase.storage().ref().child(`todos/Image1`);
+    const uploadTask = storageRef.put(blob);
+    uploadTask.on(
+      firebase.storage.TaskEvent.STATE_CHANGED,
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = Math.fround(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        ).toFixed(2);
+        console.log(`Uploading... ${progress}%`);
+      },
+      (error) => {
+        console.log("upload failed");
+        console.log(error);
+        blob.close();
+      },
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((url) => {
+          console.log("Download URL: ", url);
+        });
+      }
+    );
+  };
+
   const askForImage = () => {
     console.log("asking for image");
     const options = ["Take a photo", "Choose from library", "Cancel"];
@@ -134,6 +173,7 @@ const Home = () => {
     });
     if (!result.canceled) {
       console.log(result);
+      uploadImage(result.assets[0].uri);
     } else {
       alert("You did not select any image.");
     }
@@ -144,8 +184,8 @@ const Home = () => {
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
-          placeholder={"Add a new todo"}
-          placeholderTextColor={"#aaaaaa"}
+          placeholder="Add a new todo"
+          placeholderTextColor="#aaaaaa"
           onChangeText={(text) => setAddData(text)}
           value={addData}
           underlineColorAndroid="transparent"
