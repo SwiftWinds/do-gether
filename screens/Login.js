@@ -23,6 +23,7 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const navigation = useNavigation();
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -31,6 +32,7 @@ export default function Login() {
     });
     return unsubscribe;
   }, []);
+
   const validate = () => {
     if (!email || !password) {
       setErrorMsg("Please fill in all fields");

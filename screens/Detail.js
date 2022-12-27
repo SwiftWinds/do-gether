@@ -1,27 +1,30 @@
 import { useNavigation } from "@react-navigation/native";
+import to from "await-to-js";
+import { collection, updateDoc, doc } from "firebase/firestore";
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 
-import { firebase } from "../config";
+import { db, auth } from "../config";
 
 const Detail = ({ route }) => {
-  const todosRef = firebase.firestore().collection("todos");
+  const todosRef = collection(db, `users/${auth.currentUser.uid}/todos`);
   const [todoTitle, setTodoTitle] = useState(route.params.item.title);
   const navigation = useNavigation();
-  const updateTodo = () => {
-    if (todoTitle) {
-      todosRef
-        .doc(route.params.item.id)
-        .update({
-          title: todoTitle,
-        })
-        .then(() => {
-          navigation.navigate("Home");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+
+  const updateTodo = async () => {
+    if (!todoTitle) {
+      return;
     }
+    const [error] = await to(
+      updateDoc(doc(todosRef, route.params.item.id), {
+        title: todoTitle,
+      })
+    );
+    if (error) {
+      console.log(error);
+      return;
+    }
+    navigation.navigate("Home");
   };
 
   return (
