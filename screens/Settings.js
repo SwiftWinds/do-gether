@@ -5,10 +5,11 @@ import {
   signInWithEmailAndPassword,
   updatePassword,
 } from "firebase/auth";
+import { collection, doc, getDocs, writeBatch } from "firebase/firestore";
 import React, { useState } from "react";
 import { View, Text, Button, TextInput } from "react-native";
 
-import { auth } from "../config";
+import { db, auth } from "../config";
 import AppStyles from "../styles/AppStyles";
 
 const Settings = () => {
@@ -18,12 +19,20 @@ const Settings = () => {
 
   const navigation = useNavigation();
 
-  const validate = () => {
+  const validateUpdatePassword = () => {
     if (!currentPassword || !newPassword) {
       setErrorMsg("Please fill in all fields");
-      return false;
+      return;
     }
-    return true;
+    updateUserPassword();
+  };
+
+  const validateDeleteUser = () => {
+    if (!currentPassword) {
+      setErrorMsg("Please fill in all fields");
+      return;
+    }
+    deleteUserAccount();
   };
 
   const updateUserPassword = async () => {
@@ -45,6 +54,19 @@ const Settings = () => {
     setErrorMsg("");
   };
 
+  const deleteUserData = async (user) => {
+    const { uid } = user;
+    const batch = writeBatch(db);
+    const todosRef = collection(db, `users/${uid}/todos`);
+    const querySnapshot = await getDocs(todosRef);
+    querySnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    const userRef = doc(db, "users", uid);
+    batch.delete(userRef);
+    await batch.commit();
+  };
+
   const deleteUserAccount = async () => {
     let [error, userCredentials] = await to(
       signInWithEmailAndPassword(auth, auth.currentUser.email, currentPassword)
@@ -54,6 +76,7 @@ const Settings = () => {
       return;
     }
     const { user } = userCredentials;
+    await deleteUserData(user);
     [error] = await to(deleteUser(user));
     if (error) {
       setErrorMsg(error.message);
@@ -62,8 +85,6 @@ const Settings = () => {
     setCurrentPassword("");
     setNewPassword("");
     setErrorMsg("");
-    // delete users/{uid} and users/{uid}/todos/{todoId} from firestore with batch delete
-
     navigation.navigate("Login");
   };
 
@@ -98,15 +119,9 @@ const Settings = () => {
         onChangeText={setNewPassword}
         value={newPassword}
       />
-      <Button
-        title="Update Password"
-        onPress={() => validate() && updateUserPassword()}
-      />
+      <Button title="Update Password" onPress={validateUpdatePassword} />
       <Text style={AppStyles.errorText}>{errorMsg}</Text>
-      <Button
-        title="Delete Account"
-        onPress={() => validate() && deleteUserAccount()}
-      />
+      <Button title="Delete Account" onPress={validateDeleteUser} />
       <Button title="Logout" onPress={logout} />
     </View>
   );

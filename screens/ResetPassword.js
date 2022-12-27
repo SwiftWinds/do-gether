@@ -29,6 +29,8 @@ export default function ResetPassword() {
       setErrorMsg(error.message);
       return;
     }
+    setEmail("");
+    setErrorMsg("");
     navigation.navigate("Login");
   };
 
