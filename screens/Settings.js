@@ -29,7 +29,7 @@ const Settings = () => {
 
   const validateDeleteUser = () => {
     if (!currentPassword) {
-      setErrorMsg("Please fill in all fields");
+      setErrorMsg("Please fill in the current password field");
       return;
     }
     deleteUserAccount();
@@ -111,8 +111,8 @@ const Settings = () => {
         onChangeText={setNewPassword}
         value={newPassword}
       />
-      <Button title="Update Password" onPress={validateUpdatePassword} />
       <Text style={AppStyles.errorText}>{errorMsg}</Text>
+      <Button title="Update Password" onPress={validateUpdatePassword} />
       <Button title="Delete Account" onPress={validateDeleteUser} />
       <Button title="Logout" onPress={logout} />
     </View>

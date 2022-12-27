@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import {
   View,
@@ -14,7 +15,7 @@ import {
 } from "react-native";
 
 import InlineBtn from "../components/InlineBtn";
-import { auth } from "../config";
+import { auth, db } from "../config";
 import AppStyles from "../styles/AppStyles";
 
 export default function Signup() {
@@ -39,6 +40,14 @@ export default function Signup() {
     }
   };
 
+  const createUserDoc = () => {
+    const userDoc = doc(db, "users", auth.currentUser.uid);
+    return setDoc(userDoc, {
+      partner: null,
+      streak: 0,
+    });
+  };
+
   const signUp = async () => {
     // we cannot destructure userCredentials.user here because it will crash if userCredentials is undefined
     const [error, userCredentials] = await to(
@@ -50,11 +59,12 @@ export default function Signup() {
     }
     const { user } = userCredentials;
     console.log(user);
+    await createUserDoc();
+    await sendEmailVerification(user);
     setEmail("");
     setPassword("");
     setConfirmPassword("");
     setErrorMsg("");
-    await sendEmailVerification(user);
     navigation.navigate("VerifyEmail");
   };
 
