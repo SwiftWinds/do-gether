@@ -25,10 +25,10 @@ import {
   TouchableOpacity,
   Keyboard,
   Pressable,
-  Alert,
 } from "react-native";
 
 import { db, auth, storage } from "../config";
+import alert from "../utils/alert";
 
 const Todo = () => {
   const [todos, setTodos] = useState([]);
@@ -100,7 +100,7 @@ const Todo = () => {
       }
 
       const choice = await new Promise((resolve) =>
-        Alert.alert("Are your sure?", msg, [
+        alert("Are your sure?", msg, [
           // The "Yes" button
           {
             text: "Yes",
