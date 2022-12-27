@@ -3,6 +3,7 @@ import { sendEmailVerification } from "firebase/auth";
 import React from "react";
 import { View, Text, Button } from "react-native";
 
+import InlineBtn from "../components/InlineBtn";
 import { auth } from "../config";
 import AppStyles from "../styles/AppStyles";
 
@@ -19,10 +20,12 @@ const VerifyEmail = () => {
   return (
     <View style={AppStyles.container}>
       <Text>Confirm your email address</Text>
-      <Button
-        title="Resend email"
-        onPress={() => sendEmailVerification(auth.currentUser)}
-      />
+      <View style={AppStyles.rowContainer}>
+        <Text style={AppStyles.lightText}>Didn't get the email yet? </Text>
+        <InlineBtn onPress={() => sendEmailVerification(auth.currentUser)}>
+          Resend email
+        </InlineBtn>
+      </View>
       <Button title="Recheck status" onPress={recheckStatus} />
     </View>
   );

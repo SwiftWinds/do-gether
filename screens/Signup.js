@@ -89,7 +89,7 @@ export default function Signup() {
             AppStyles.lightTextInput,
             AppStyles.lightText,
           ]}
-          placeholder="Confirm Password"
+          placeholder="Confirm password"
           placeholderTextColor="#bebebe"
           secureTextEntry
           onChangeText={setConfirmPassword}
