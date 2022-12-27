@@ -67,6 +67,7 @@ export default function Login() {
             AppStyles.lightTextInput,
             AppStyles.lightText,
           ]}
+          autoCapitalize="none"
           placeholder="Email"
           placeholderTextColor="#bebebe"
           onChangeText={setEmail}
