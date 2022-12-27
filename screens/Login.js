@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -23,7 +23,14 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const navigation = useNavigation();
-
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.navigate("Home");
+      }
+    });
+    return unsubscribe;
+  }, []);
   const validate = () => {
     if (!email || !password) {
       setErrorMsg("Please fill in all fields");

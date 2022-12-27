@@ -1,6 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import React, { useState } from "react";
 import {
   View,
