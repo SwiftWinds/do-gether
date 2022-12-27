@@ -52,6 +52,9 @@ export default function Login() {
     }
     const { user } = userCredentials;
     console.log(user);
+    setEmail("");
+    setPassword("");
+    setErrorMsg("");
     navigation.navigate("Home");
   };
 
