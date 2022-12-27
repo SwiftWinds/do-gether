@@ -19,6 +19,7 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 8,
+    marginHorizontal: 16,
   },
   backgroundCover: {
     alignSelf: "stretch",

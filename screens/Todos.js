@@ -1,7 +1,20 @@
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import to from "await-to-js";
 import * as ImagePicker from "expo-image-picker";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -12,9 +25,10 @@ import {
   TouchableOpacity,
   Keyboard,
   Pressable,
+  Alert,
 } from "react-native";
 
-import { firebase } from "../config";
+import { db, auth, storage } from "../config";
 
 const Todo = () => {
   const [todos, setTodos] = useState([]);
@@ -24,18 +38,19 @@ const Todo = () => {
 
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const todosRef = firebase.firestore().collection("todos");
+  const todosRef = collection(db, `users/${auth.currentUser.uid}/todos`);
 
   useEffect(() => {
-    todosRef.orderBy("createdAt", "desc").onSnapshot(
+    const unsubscribe = onSnapshot(
+      query(todosRef, orderBy("createdAt", "desc")),
       (querySnapshot) => {
         const todos = [];
         querySnapshot.forEach((doc) => {
-          const { title, finished } = doc.data();
+          const { title, status } = doc.data();
           todos.push({
             id: doc.id,
             title,
-            finished,
+            status,
           });
         });
         setTodos(todos);
@@ -44,60 +59,82 @@ const Todo = () => {
         console.log(error);
       }
     );
+
+    return unsubscribe;
   }, []);
 
-  const addTodo = () => {
+  const addTodo = async () => {
     if (addData) {
-      const timestamp = firebase.firestore.FieldValue.serverTimestamp();
       const data = {
         title: addData,
-        createdAt: timestamp,
-        finished: false,
+        createdAt: serverTimestamp(),
+        status: "unfinished",
+        proof: null,
       };
-      todosRef
-        .add(data)
-        .then(() => {
-          setAddData("");
-          Keyboard.dismiss();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      const [error] = await to(addDoc(todosRef, data));
+      if (error) {
+        console.log(error);
+        return;
+      }
+      setAddData("");
+      Keyboard.dismiss();
     }
   };
 
-  const deleteTodo = (todo) => {
-    todosRef
-      .doc(todo.id)
-      .delete()
-      .catch((error) => {
-        console.log(error);
-      });
+  const deleteTodo = async (todo) => {
+    const [error] = await to(deleteDoc(doc(todosRef, todo.id)));
+    if (error) {
+      console.log(error);
+    }
   };
 
-  const toggleTodo = (todo) => {
-    const finished = !todo.finished;
-    todosRef
-      .doc(todo.id)
-      .update({
-        finished,
+  const toggleTodo = async (todo) => {
+    let msg, status;
+    if (todo.status !== "unfinished") {
+      if (todo.status === "verified") {
+        msg =
+          "Your partner will have to re-verify a new proof of completion. Are you sure you want to continue?";
+      } else if (todo.status === "finished") {
+        msg =
+          "You'll have to upload a new proof of completion. Are you sure you want to continue?";
+      }
+
+      const choice = await new Promise((resolve) =>
+        Alert.alert("Are your sure?", msg, [
+          // The "Yes" button
+          {
+            text: "Yes",
+            onPress: () => {
+              resolve("Yes");
+            },
+          },
+          // The "No" button
+          // Does nothing but dismiss the dialog when tapped
+          {
+            text: "No",
+            onPress: () => {
+              resolve("No");
+            },
+          },
+        ])
+      );
+
+      if (choice === "No") {
+        return;
+      }
+      status = "unfinished";
+    } else {
+      status = "finished";
+    }
+
+    const [error] = await to(
+      updateDoc(doc(todosRef, todo.id), {
+        status,
       })
-      .then(() => {
-        setTodos(
-          todos.map((item) => {
-            if (item.id === todo.id) {
-              return {
-                ...item,
-                finished,
-              };
-            }
-            return item;
-          })
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    );
+    if (error) {
+      console.log(error);
+    }
   };
 
   const getBlobFromUri = async (uri) => {
@@ -115,15 +152,19 @@ const Todo = () => {
     });
   };
 
-  const uploadImage = async (imageUri) => {
+  const uploadImage = async (imageUri, item) => {
     const blob = await getBlobFromUri(imageUri);
 
-    const storageRef = firebase.storage().ref().child(`todos/Image1`);
-    const uploadTask = storageRef.put(blob);
+    const storageRef = ref(
+      storage,
+      `users/${auth.currentUser.uid}/todos/${item.id}`
+    );
+
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
     uploadTask.on(
-      firebase.storage.TaskEvent.STATE_CHANGED,
+      "state_changed",
       (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
         const progress = Math.fround(
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         ).toFixed(2);
@@ -134,16 +175,15 @@ const Todo = () => {
         console.log(error);
         blob.close();
       },
-      () => {
-        uploadTask.snapshot.ref.getDownloadURL().then((url) => {
-          console.log("Download URL: ", url);
-        });
+      async () => {
+        const url = await getDownloadURL(uploadTask.snapshot.ref);
+        console.log("Download URL: ", url);
+        toggleTodo(item);
       }
     );
   };
 
-  const askForImage = () => {
-    console.log("asking for image");
+  const askForImage = (item) => {
     const options = ["Take a photo", "Choose from library", "Cancel"];
     const cancelButtonIndex = 2;
     showActionSheetWithOptions(
@@ -153,36 +193,35 @@ const Todo = () => {
       },
       (buttonIndex) => {
         if (buttonIndex === 0) {
-          console.log("Take a photo");
-          takePhotoAsync();
+          takePhotoAsync(item);
         } else if (buttonIndex === 1) {
-          pickImageAsync();
+          pickImageAsync(item);
         }
       }
     );
   };
 
-  const takePhotoAsync = async () => {
+  const takePhotoAsync = async (item) => {
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       quality: 1,
     });
     if (!result.canceled) {
       console.log(result);
-      uploadImage(result.assets[0].uri);
+      uploadImage(result.assets[0].uri, item);
     } else {
       alert("You did not take any photo.");
     }
   };
 
-  const pickImageAsync = async () => {
+  const pickImageAsync = async (item) => {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
     });
     if (!result.canceled) {
       console.log(result);
-      uploadImage(result.assets[0].uri);
+      uploadImage(result.assets[0].uri, item);
     } else {
       alert("You did not select any image.");
     }
@@ -208,19 +247,24 @@ const Todo = () => {
       <FlatList
         data={todos}
         numColumns={1}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.container}>
             <Ionicons
               name={
-                item.finished ? "md-hourglass-outline" : "md-square-outline"
+                {
+                  unfinished: "md-square-outline",
+                  finished: "md-hourglass-outline",
+                  verified: "md-checkmark-circle-outline",
+                }[item.status]
               }
               size={24}
               color="black"
               onPress={() => {
-                if (item.finished === false) {
-                  askForImage();
+                if (item.status === "unfinished") {
+                  askForImage(item);
                 } else {
-                  toggleTodo();
+                  toggleTodo(item);
                 }
               }}
               style={styles.todoIcon}

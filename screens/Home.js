@@ -1,13 +1,27 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { onAuthStateChanged } from "firebase/auth";
+import React, { useEffect } from "react";
 
+import { auth } from "../config";
 import Partner from "./Partner";
 import Settings from "./Settings";
 import Todos from "./Todos";
 
 const Home = () => {
   const Tab = createBottomTabNavigator();
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigation.navigate("Login");
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
