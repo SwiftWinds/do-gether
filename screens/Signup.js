@@ -50,6 +50,10 @@ export default function Signup() {
     }
     const { user } = userCredentials;
     console.log(user);
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setErrorMsg("");
     await sendEmailVerification(user);
     navigation.navigate("VerifyEmail");
   };
