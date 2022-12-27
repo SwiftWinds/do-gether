@@ -16,7 +16,7 @@ export default function App() {
     <ActionSheetProvider>
       <NavigationContainer
         linking={{
-          prefixes: ["https://dogether.gg", "dogether://"],
+          prefixes: ["https://dogether-78b6f.web.app", "dogether://"],
           config: {
             screens: {
               Login: "login",
@@ -29,6 +29,12 @@ export default function App() {
                 stringify: {
                   item: (item) => item.id,
                 },
+              },
+            },
+            User: {
+              path: "user/:id",
+              parse: {
+                id: (id) => Number(id),
               },
             },
           },

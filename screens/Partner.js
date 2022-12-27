@@ -1,23 +1,48 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
 import * as Clipboard from "expo-clipboard";
-import InlineBtn from "../components/InlineBtn";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-const copyToClipboard = async () => {
-  await Clipboard.setStringAsync("Hello World");
-  alert("Copied to Clipboard!");
+import { auth } from "../config";
+
+const WEB_API_KEY = "AIzaSyCJ2FY69u3jR8WMVLCT_TDrkKyqkUE2Y3k";
+
+const copyInvitationUrl = async () => {
+  try {
+    const payload = {
+      dynamicLinkInfo: {
+        domainUriPrefix: "https://dogether.page.link",
+        link: `https://dogether-78b6f.web.app/user/${auth.currentUser.uid}`,
+        androidInfo: {
+          androidPackageName: "gg.dogether.app",
+        },
+        socialMetaTagInfo: {
+          socialTitle: `New invite from ${auth.currentUser.displayName}`,
+          socialDescription: `${auth.currentUser.displayName} is using Dogether to stay accountable and motivated. Join them on their journey!`,
+          // socialImageLink: "<image-url>",
+        },
+      },
+    };
+
+    const url = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${WEB_API_KEY}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const json = await response.json();
+    await Clipboard.setStringAsync(json.shortLink);
+    alert("Copied to Clipboard!");
+  } catch (error) {
+    alert(error.message);
+  }
 };
 const Partner = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.message}>Oops! You don't have a partner yet!</Text>
-      <TouchableOpacity style={styles.button} onPress={copyToClipboard}>
+      <TouchableOpacity style={styles.button} onPress={copyInvitationUrl}>
         <Text>Share link</Text>
       </TouchableOpacity>
     </View>
