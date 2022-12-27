@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -19,8 +19,9 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [errorMsg, setErrorMsg] = useState("");
+
+  const passwordInputRef = useRef(null);
 
   const navigation = useNavigation();
 
@@ -77,7 +78,10 @@ export default function Login() {
           autoCapitalize="none"
           placeholder="Email"
           placeholderTextColor="#bebebe"
+          returnKeyType="next"
+          keyboardType="email-address"
           onChangeText={setEmail}
+          onSubmitEditing={() => passwordInputRef.current.focus()}
           value={email}
         />
         <TextInput
@@ -87,10 +91,13 @@ export default function Login() {
             AppStyles.lightText,
           ]}
           placeholder="Password"
-          placeholderTextColor="#bebebe"
+          placeholderTextColor="#DCDCDC"
+          returnKeyType="go"
           secureTextEntry
           onChangeText={setPassword}
+          onSubmitEditing={validate}
           value={password}
+          ref={passwordInputRef}
         />
         <View style={AppStyles.rowContainer}>
           <InlineBtn onPress={() => navigation.navigate("ResetPassword")}>
