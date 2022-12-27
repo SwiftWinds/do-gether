@@ -94,13 +94,9 @@ const Settings = () => {
   };
 
   return (
-    <View style={AppStyles.imageContainer}>
+    <View style={AppStyles.container}>
       <TextInput
-        style={[
-          AppStyles.textInput,
-          AppStyles.lightTextInput,
-          AppStyles.lightText,
-        ]}
+        style={[AppStyles.textInput, AppStyles.darkTextInput]}
         placeholder="Current password"
         placeholderTextColor="#bebebe"
         secureTextEntry
@@ -108,11 +104,7 @@ const Settings = () => {
         value={currentPassword}
       />
       <TextInput
-        style={[
-          AppStyles.textInput,
-          AppStyles.lightTextInput,
-          AppStyles.lightText,
-        ]}
+        style={[AppStyles.textInput, AppStyles.darkTextInput]}
         placeholder="New password"
         placeholderTextColor="#bebebe"
         secureTextEntry

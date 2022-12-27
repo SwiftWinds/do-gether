@@ -52,6 +52,9 @@ export default StyleSheet.create({
   lightTextInput: {
     borderBottomColor: "#fff",
   },
+  darkTextInput: {
+    borderBottomColor: "#cdcdcd",
+  },
   inlineBtn: {
     color: "#428282",
   },
