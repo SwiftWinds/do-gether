@@ -21,7 +21,7 @@ const VerifyEmail = () => {
     <View style={AppStyles.container}>
       <Text>Confirm your email address</Text>
       <View style={AppStyles.rowContainer}>
-        <Text style={AppStyles.lightText}>Didn't get the email yet? </Text>
+        <Text>Didn't get the email yet? </Text>
         <InlineBtn onPress={() => sendEmailVerification(auth.currentUser)}>
           Resend email
         </InlineBtn>
