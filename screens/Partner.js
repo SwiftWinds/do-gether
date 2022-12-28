@@ -59,6 +59,7 @@ const copyInvitationUrl = async () => {
 
 const Partner = () => {
   const [hasPartner, setHasPartner] = useState(false);
+  const [partner, setPartner] = useState(null);
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ const Partner = () => {
       (doc) => {
         const { partner } = doc.data();
         setHasPartner(!!partner);
+        setPartner(partner);
       },
       (error) => {
         console.log(error);
@@ -75,7 +77,7 @@ const Partner = () => {
 
     const unsubPartnerTodos = onSnapshot(
       query(
-        collection(db, `users/${auth.currentUser.uid}/todos`),
+        collection(db, `users/${partner}/todos`),
         orderBy("createdAt", "desc")
       ),
       (querySnapshot) => {
@@ -100,7 +102,7 @@ const Partner = () => {
       unsubHasPartner();
       unsubPartnerTodos();
     };
-  }, []);
+  }, [partner]);
 
   const showImage = (item) => {
     alert("Show image");
