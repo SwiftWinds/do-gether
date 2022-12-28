@@ -38,8 +38,10 @@ const resetStreaksAndDeleteTodos = async () => {
 
 const deleteImages = async () => {
   // delete users folder in storage
-  const usersFolder = admin.storage().bucket().file("users");
-  await usersFolder.delete();
+  const bucket = admin.storage().bucket();
+  return bucket.deleteFiles({
+    prefix: "users",
+  });
 };
 
 // runs every day at 5:00am LA time
