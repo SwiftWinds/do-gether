@@ -30,12 +30,12 @@ export default function App() {
                   item: (item) => item.id,
                 },
               },
-            },
-            User: {
-              path: "user/:id",
-              parse: {
-                id: (id) => Number(id),
-              },
+              // User: {
+              //   path: "user/:uid",
+              //   parse: {
+              //     uid: (uid) => uid,
+              //   },
+              // },
             },
           },
         }}
@@ -47,6 +47,7 @@ export default function App() {
           <Stack.Screen name="ResetPassword" component={ResetPassword} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Detail" component={Detail} />
+          {/* <Stack.Screen name="User" component={User} /> */}
         </Stack.Navigator>
       </NavigationContainer>
     </ActionSheetProvider>
