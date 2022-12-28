@@ -8,7 +8,7 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
   FlatList,
   Pressable,
 } from "react-native";
+import ImageView from "react-native-image-viewing";
 
 import { auth, db } from "../config";
 
@@ -61,6 +62,19 @@ const Partner = () => {
   const [hasPartner, setHasPartner] = useState(false);
   const [partner, setPartner] = useState(null);
   const [todos, setTodos] = useState([]);
+  const images = useMemo(() => {
+    const images = [];
+    todos.forEach((todo) => {
+      if (todo.status === "finished") {
+        images.push({
+          uri: todo.proof,
+        });
+      }
+    });
+    return images;
+  }, [todos]);
+  const [visible, setIsVisible] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
     const unsubHasPartner = onSnapshot(
@@ -74,6 +88,14 @@ const Partner = () => {
         console.log(error);
       }
     );
+
+    return unsubHasPartner;
+  }, []);
+
+  useEffect(() => {
+    if (!partner) {
+      return;
+    }
 
     const unsubPartnerTodos = onSnapshot(
       query(
@@ -98,53 +120,61 @@ const Partner = () => {
       }
     );
 
-    return () => {
-      unsubHasPartner();
-      unsubPartnerTodos();
-    };
+    return unsubPartnerTodos;
   }, [partner]);
 
   const showImage = (item) => {
-    alert("Show image");
+    const index = images.findIndex((image) => image.uri === item.proof);
+    setImageIndex(index);
+    setIsVisible(true);
   };
 
   if (hasPartner) {
     return (
-      <View style={{ flex: 1 }}>
-        <FlatList
-          data={todos}
-          numColumns={1}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.container}>
-              <Ionicons
-                name={
-                  {
-                    unfinished: "md-square-outline",
-                    finished: "md-alert-circle-outline",
-                    verified: "md-checkmark-circle-outline",
-                  }[item.status]
-                }
-                size={24}
-                color="black"
-                style={styles.todoIcon}
-              />
+      <>
+        <View style={{ flex: 1 }}>
+          <FlatList
+            data={todos}
+            numColumns={1}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
               <Pressable
-                style={styles.innerContainer}
                 onPress={() => {
                   if (item.status === "finished") {
                     showImage(item);
                   }
                 }}
+                style={styles.container}
               >
-                <Text style={styles.itemHeading}>
-                  {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
-                </Text>
+                <Ionicons
+                  name={
+                    {
+                      unfinished: "md-square-outline",
+                      finished: "md-alert-circle-outline",
+                      verified: "md-checkmark-circle-outline",
+                    }[item.status]
+                  }
+                  size={24}
+                  color="black"
+                  style={styles.todoIcon}
+                />
+                <View style={styles.innerContainer}>
+                  <Text style={styles.itemHeading}>
+                    {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
+                  </Text>
+                </View>
               </Pressable>
-            </View>
-          )}
+            )}
+          />
+        </View>
+        <ImageView
+          images={images}
+          imageIndex={imageIndex}
+          onImageIndexChange={setImageIndex}
+          visible={visible}
+          onRequestClose={() => setIsVisible(false)}
         />
-      </View>
+      </>
     );
   }
 
@@ -177,6 +207,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
     height: "100%",
   },
   innerContainer: {
