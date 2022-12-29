@@ -189,7 +189,10 @@ const Partner = () => {
                       status: "verified",
                     }
                   );
-                  setIsVisible(false);
+                  // close modal if no more images, else show next image
+                  if (imageIndex === images.length - 1) {
+                    setIsVisible(false);
+                  }
                 }}
               >
                 <Text style={styles.footerText}>Verify proof</Text>
