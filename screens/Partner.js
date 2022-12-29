@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import ImageView from "@staltz/react-native-image-viewing";
 import to from "await-to-js";
 import * as Clipboard from "expo-clipboard";
 import {
@@ -17,7 +18,6 @@ import {
   FlatList,
   Pressable,
 } from "react-native";
-import ImageView from "react-native-image-viewing";
 
 import { auth, db } from "../config";
 
@@ -64,10 +64,12 @@ const Partner = () => {
   const [todos, setTodos] = useState([]);
   const images = useMemo(() => {
     const images = [];
+    console.log("todos", todos);
     todos.forEach((todo) => {
       if (todo.status === "finished") {
         images.push({
           uri: todo.proof,
+          id: todo.id,
         });
       }
     });
@@ -105,11 +107,12 @@ const Partner = () => {
       (querySnapshot) => {
         const todos = [];
         querySnapshot.forEach((doc) => {
-          const { title, status } = doc.data();
+          const { title, status, proof } = doc.data();
           todos.push({
             id: doc.id,
             title,
             status,
+            proof,
           });
         });
         setTodos(todos);
@@ -127,6 +130,7 @@ const Partner = () => {
     const index = images.findIndex((image) => image.uri === item.proof);
     setImageIndex(index);
     setIsVisible(true);
+    console.log("viewing image: ", images[index]);
   };
 
   if (hasPartner) {

@@ -1,0 +1,13 @@
+diff --git a/node_modules/@staltz/react-native-image-viewing/dist/components/ImageItem/ImageItem.android.js b/node_modules/@staltz/react-native-image-viewing/dist/components/ImageItem/ImageItem.android.js
+index d7d15ec..be36556 100644
+--- a/node_modules/@staltz/react-native-image-viewing/dist/components/ImageItem/ImageItem.android.js
++++ b/node_modules/@staltz/react-native-image-viewing/dist/components/ImageItem/ImageItem.android.js
+@@ -65,7 +65,7 @@ const ImageItem = ({ imageSrc, onZoom, onRequestClose, onLongPress, delayLongPre
+         const offsetY = (_c = (_b = (_a = nativeEvent) === null || _a === void 0 ? void 0 : _a.contentOffset) === null || _b === void 0 ? void 0 : _b.y, (_c !== null && _c !== void 0 ? _c : 0));
+         scrollValueY.setValue(offsetY);
+     };
+-    return (<Animated.ScrollView ref={imageContainer} style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} pagingEnabled nestedScrollEnabled showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ height: SCREEN_HEIGHT * 2 }} scrollEnabled={swipeToCloseEnabled} {...(swipeToCloseEnabled && {
++    return (<Animated.ScrollView ref={imageContainer} style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} pagingEnabled nestedScrollEnabled showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ height: (imageDimensions?.height + 1) ?? (SCREEN_HEIGHT * 3) }} scrollEnabled={swipeToCloseEnabled} {...(swipeToCloseEnabled && {
+         onScroll,
+         onScrollEndDrag,
+     })}>
