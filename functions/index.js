@@ -37,11 +37,18 @@ const resetStreaksAndDeleteTodos = async () => {
 };
 
 const deleteImages = async () => {
-  // delete users folder in storage
+  // delete all files matching the pattern "users/{userId}/todos/{todoId}"
   const bucket = admin.storage().bucket();
-  return bucket.deleteFiles({
+  const [files] = await bucket.getFiles({
     prefix: "users",
   });
+  return Promise.all(
+      files.map((file) => {
+        if (file.name.includes("todos")) {
+          return file.delete();
+        }
+      }),
+  );
 };
 
 // runs every day at 5:00am LA time

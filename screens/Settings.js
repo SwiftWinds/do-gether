@@ -8,6 +8,7 @@ import {
 import { collection, doc, getDocs, writeBatch } from "firebase/firestore";
 import React, { useState } from "react";
 import { View, Text, Button, TextInput } from "react-native";
+import ProfilePicture from "react-native-profile-picture";
 
 import { db, auth } from "../config";
 import AppStyles from "../styles/AppStyles";
@@ -95,6 +96,12 @@ const Settings = () => {
 
   return (
     <View style={AppStyles.container}>
+      <ProfilePicture
+        isPicture={false}
+        user="FirstName ListName"
+        shape="circle"
+      />
+      <Button title="edit" />
       <TextInput
         style={[AppStyles.textInput, AppStyles.darkTextInput]}
         placeholder="Current password"
