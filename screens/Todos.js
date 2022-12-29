@@ -101,19 +101,19 @@ const Todo = () => {
 
       const choice = await new Promise((resolve) =>
         alert("Are your sure?", msg, [
-          // The "Yes" button
-          {
-            text: "Yes",
-            onPress: () => {
-              resolve("Yes");
-            },
-          },
           // The "No" button
           // Does nothing but dismiss the dialog when tapped
           {
             text: "No",
             onPress: () => {
               resolve("No");
+            },
+          },
+          // The "Yes" button
+          {
+            text: "Yes",
+            onPress: () => {
+              resolve("Yes");
             },
           },
         ])
