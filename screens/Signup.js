@@ -5,7 +5,7 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -24,8 +24,10 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [errorMsg, setErrorMsg] = useState("");
+
+  const passwordInputRef = useRef(null);
+  const confirmPasswordInputRef = useRef(null);
 
   const navigation = useNavigation();
 
@@ -83,7 +85,10 @@ export default function Signup() {
           autoCapitalize="none"
           placeholder="Email"
           placeholderTextColor="#bebebe"
+          returnKeyType="next"
+          keyboardType="email-address"
           onChangeText={setEmail}
+          onSubmitEditing={passwordInputRef?.current?.focus}
           value={email}
         />
         <TextInput
@@ -94,9 +99,12 @@ export default function Signup() {
           ]}
           placeholder="Password"
           placeholderTextColor="#bebebe"
+          returnKeyType="next"
           secureTextEntry
           onChangeText={setPassword}
+          onSubmitEditing={confirmPasswordInputRef?.current?.focus}
           value={password}
+          ref={passwordInputRef}
         />
         <TextInput
           style={[
@@ -109,6 +117,7 @@ export default function Signup() {
           secureTextEntry
           onChangeText={setConfirmPassword}
           value={confirmPassword}
+          ref={confirmPasswordInputRef}
         />
         <View>
           <Text style={AppStyles.errorText}>{errorMsg}</Text>

@@ -152,6 +152,17 @@ const Todo = () => {
     });
   };
 
+  const setTaskProof = async (item, url) => {
+    const [error] = await to(
+      updateDoc(doc(todosRef, item.id), {
+        proof: url,
+      })
+    );
+    if (error) {
+      console.log(error);
+    }
+  };
+
   const uploadImage = async (imageUri, item) => {
     const blob = await getBlobFromUri(imageUri);
 
@@ -178,6 +189,7 @@ const Todo = () => {
       async () => {
         const url = await getDownloadURL(uploadTask.snapshot.ref);
         console.log("Download URL: ", url);
+        setTaskProof(item, url);
         toggleTodo(item);
       }
     );
@@ -220,7 +232,6 @@ const Todo = () => {
       quality: 1,
     });
     if (!result.canceled) {
-      console.log(result);
       uploadImage(result.assets[0].uri, item);
     } else {
       alert("You did not select any image.");
