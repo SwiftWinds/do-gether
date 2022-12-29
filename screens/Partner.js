@@ -5,6 +5,7 @@ import * as Clipboard from "expo-clipboard";
 import {
   onSnapshot,
   doc,
+  updateDoc,
   collection,
   query,
   orderBy,
@@ -174,9 +175,27 @@ const Partner = () => {
         <ImageView
           images={images}
           imageIndex={imageIndex}
-          onImageIndexChange={setImageIndex}
           visible={visible}
           onRequestClose={() => setIsVisible(false)}
+          // footer has verify proof button
+          FooterComponent={({ imageIndex }) => (
+            <View style={styles.footerContainer}>
+              <TouchableOpacity
+                style={styles.footerButton}
+                onPress={() => {
+                  updateDoc(
+                    doc(db, `users/${partner}/todos/${images[imageIndex].id}`),
+                    {
+                      status: "verified",
+                    }
+                  );
+                  setIsVisible(false);
+                }}
+              >
+                <Text style={styles.footerText}>Verify proof</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         />
       </>
     );
@@ -258,5 +277,25 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 20,
     marginLeft: 14,
+  },
+  footerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    backgroundColor: "white",
+  },
+  footerButton: {
+    height: 40,
+    borderRadius: 5,
+    backgroundColor: "#788eec",
+    width: 150,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  footerText: {
+    color: "white",
+    fontSize: 20,
+    textAlign: "center",
   },
 });
