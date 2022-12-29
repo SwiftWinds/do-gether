@@ -5,12 +5,19 @@ import {
   signInWithEmailAndPassword,
   updatePassword,
 } from "firebase/auth";
-import { collection, doc, getDocs, writeBatch } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  writeBatch,
+} from "firebase/firestore";
+import { deleteObject, ref } from "firebase/storage";
 import React, { useState } from "react";
 import { View, Text, Button, TextInput } from "react-native";
 import ProfilePicture from "react-native-profile-picture";
 
-import { db, auth } from "../config";
+import { db, auth, storage } from "../config";
 import AppStyles from "../styles/AppStyles";
 
 const Settings = () => {
@@ -65,7 +72,19 @@ const Settings = () => {
     });
     const userRef = doc(db, "users", uid);
     batch.delete(userRef);
-    await batch.commit();
+
+    // remove partner field from user's partner if they have one
+    const userDoc = await getDoc(userRef);
+    const partner = userDoc.get("partner");
+    if (partner) {
+      const partnerRef = doc(db, "users", partner);
+      batch.update(partnerRef, { partner: null });
+    }
+
+    // remove profile picture from storage if they have one
+    const profilePictureRef = ref(storage, `profilePictures/${uid}`);
+
+    await Promise.all([batch.commit(), to(deleteObject(profilePictureRef))]);
   };
 
   const deleteUserAccount = async () => {
