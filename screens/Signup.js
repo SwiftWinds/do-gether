@@ -42,9 +42,12 @@ export default function Signup() {
     }
   };
 
-  const createUserDoc = () => {
-    const userDoc = doc(db, "users", auth.currentUser.uid);
+  const createUserDoc = (user) => {
+    const userDoc = doc(db, "users", user.uid);
     return setDoc(userDoc, {
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
       partner: null,
       streak: 0,
     });
@@ -61,7 +64,7 @@ export default function Signup() {
     }
     const { user } = userCredentials;
     console.log(user);
-    await createUserDoc();
+    await createUserDoc(user);
     await sendEmailVerification(user);
     setEmail("");
     setPassword("");
