@@ -275,7 +275,7 @@ const Settings = () => {
     <View style={AppStyles.container}>
       <ProfilePicture
         isPicture={!!profilePicture}
-        requirePicture={profilePicture}
+        URLPicture={profilePicture}
         user={auth.currentUser.displayName}
         shape="circle"
       />
