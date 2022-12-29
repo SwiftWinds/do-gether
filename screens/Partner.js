@@ -83,7 +83,7 @@ const Partner = () => {
     const unsubHasPartner = onSnapshot(
       doc(db, `users/${auth.currentUser.uid}`),
       (doc) => {
-        const { partner } = doc.data();
+        const partner = doc.get("partner");
         setHasPartner(!!partner);
         setPartner(partner);
       },
