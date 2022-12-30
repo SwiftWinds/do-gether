@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { doc, updateDoc } from "firebase/firestore";
-import { db, auth } from "../config";
-import to from "await-to-js";
 import { useNavigation } from "@react-navigation/native";
+import to from "await-to-js";
+import { doc, updateDoc } from "firebase/firestore";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+
+import { db, auth } from "../config";
 
 const User = ({ route }) => {
   const navigation = useNavigation();
@@ -65,33 +66,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "100%",
   },
-  innerContainer: {
-    alignItems: "flex-start",
-    flexDirection: "column",
-    marginLeft: 45,
-    flex: 1,
-  },
-  itemHeading: {
-    fontWeight: "bold",
-    fontSize: 18,
-    marginRight: 22,
-  },
-  formContainer: {
-    flexDirection: "row",
-    height: 80,
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 100,
-  },
-  input: {
-    height: 48,
-    borderRadius: 5,
-    overflow: "hidden",
-    backgroundColor: "white",
-    paddingLeft: 16,
-    flex: 1,
-    marginRight: 5,
-  },
   button: {
     height: 47,
     borderRadius: 5,
@@ -99,15 +73,5 @@ const styles = StyleSheet.create({
     width: 80,
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 20,
-    textAlign: "center",
-  },
-  todoIcon: {
-    marginTop: 5,
-    fontSize: 20,
-    marginLeft: 14,
   },
 });
