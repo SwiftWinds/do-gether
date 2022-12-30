@@ -32,13 +32,13 @@ const User = ({ route }) => {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={addPartner(auth.currentUser)}
+        onPress={() => addPartner(auth.currentUser)}
       >
         <Text>Accept</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={navigation.navigate("Home")}
+        onPress={() => navigation.navigate("Home")}
       >
         <Text>Decline</Text>
       </TouchableOpacity>
