@@ -137,40 +137,45 @@ const Partner = () => {
   if (hasPartner) {
     return (
       <>
-        <View style={{ flex: 1 }}>
-          <FlatList
-            data={todos}
-            numColumns={1}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <Pressable
-                onPress={() => {
-                  if (item.status === "finished") {
-                    showImage(item);
-                  }
-                }}
-                style={styles.container}
-              >
-                <Ionicons
-                  name={
-                    {
-                      unfinished: "md-square-outline",
-                      finished: "md-alert-circle-outline",
-                      verified: "md-checkmark-circle-outline",
-                    }[item.status]
-                  }
-                  size={24}
-                  color="black"
-                  style={styles.todoIcon}
-                />
-                <View style={styles.innerContainer}>
-                  <Text style={styles.itemHeading}>
-                    {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
-                  </Text>
-                </View>
-              </Pressable>
-            )}
-          />
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Partner</Text>
+          </View>
+          <View style={styles.innerContainer}>
+            <FlatList
+              data={todos}
+              numColumns={1}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => {
+                    if (item.status === "finished") {
+                      showImage(item);
+                    }
+                  }}
+                  style={styles.innerContainer}
+                >
+                  <Ionicons
+                    name={
+                      {
+                        unfinished: "md-square-outline",
+                        finished: "md-alert-circle-outline",
+                        verified: "md-checkmark-circle-outline",
+                      }[item.status]
+                    }
+                    size={24}
+                    color="black"
+                    style={styles.todoIcon}
+                  />
+                  <View style={styles.innerContainer}>
+                    <Text style={styles.itemHeading}>
+                      {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
+                    </Text>
+                  </View>
+                </Pressable>
+              )}
+            />
+          </View>
         </View>
         <ImageView
           images={images}
@@ -217,7 +222,7 @@ const Partner = () => {
 export default Partner;
 
 const styles = StyleSheet.create({
-  message: {
+  title: {
     fontWeight: "bold",
     fontSize: 20,
     alignSelf: "center",
@@ -227,19 +232,20 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: "e5e5e5",
+    paddingTop: 30,
     padding: 15,
     borderRadius: 15,
     margin: 5,
     marginHorizontal: 10,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row",
+    flexDirection: "column",
     height: "100%",
   },
   innerContainer: {
     alignItems: "flex-start",
-    flexDirection: "column",
-    marginLeft: 45,
+    flexDirection: "row",
+    marginLeft: 10,
     flex: 1,
   },
   itemHeading: {
@@ -279,7 +285,7 @@ const styles = StyleSheet.create({
   todoIcon: {
     marginTop: 5,
     fontSize: 20,
-    marginLeft: 14,
+    //marginLeft: 14,
   },
   footerContainer: {
     flexDirection: "row",
