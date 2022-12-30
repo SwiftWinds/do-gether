@@ -32,7 +32,7 @@ import AppStyles from "../styles/AppStyles";
 
 const Settings = () => {
   const [profilePicture, setProfilePicture] = useState(null);
-  const [fullName, setFullName] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -47,7 +47,7 @@ const Settings = () => {
 
   useEffect(() => {
     getDoc(doc(db, `users/${auth.currentUser.uid}`)).then((doc) => {
-      setFullName(doc.get("fullName"));
+      setDisplayName(doc.get("displayName"));
     });
 
     const unsubscribe = onSnapshot(
@@ -69,7 +69,7 @@ const Settings = () => {
   };
 
   const validateChangeName = () => {
-    if (!fullName || !currentPassword) {
+    if (!displayName || !currentPassword) {
       setErrorMsg("Please fill in the full name and current password fields");
       return;
     }
@@ -191,13 +191,13 @@ const Settings = () => {
       return;
     }
     const { user } = userCredentials;
-    [error] = await to(updateProfile(user, { displayName: fullName }));
+    [error] = await to(updateProfile(user, { displayName }));
     if (error) {
       setErrorMsg(error.message);
       return;
     }
     const userRef = doc(db, "users", auth.currentUser.uid);
-    await updateDoc(userRef, { displayName: fullName });
+    await updateDoc(userRef, { displayName });
     setErrorMsg("");
   };
 
@@ -284,8 +284,8 @@ const Settings = () => {
         style={[AppStyles.textInput, AppStyles.darkTextInput]}
         placeholder="Full name"
         placeholderTextColor="#bebebe"
-        onChangeText={setFullName}
-        value={fullName ?? ""}
+        onChangeText={setDisplayName}
+        value={displayName ?? ""}
       />
       <TextInput
         style={[AppStyles.textInput, AppStyles.darkTextInput]}
