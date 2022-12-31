@@ -1,13 +1,31 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
-import { doc, updateDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import { db, auth } from "../config";
 
 const User = ({ route }) => {
+  const [user, setUser] = useState(null);
+
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("user:", user);
+      setUser(user);
+    });
+    return unsubscribe;
+  }, []);
+
   const addPartner = async (user) => {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const { partner } = userDoc.data();
+    if (partner) {
+      await updateDoc(doc(db, "users", partner), { partner: null });
+    }
     let [error] = await to(
       updateDoc(doc(db, "users", user.uid), { partner: route.params.uid })
     );
@@ -24,16 +42,14 @@ const User = ({ route }) => {
       return;
     }
     console.log("Partner added successfully!");
+    navigation.navigate("Home");
   };
   return (
     <View style={styles.container}>
       <Text style={styles.message}>
-        You have received an invitation from {auth.currentUser.displayName}!
+        You have received an invitation from {user?.displayName}!
       </Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => addPartner(auth.currentUser)}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => addPartner(user)}>
         <Text>Accept</Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -47,6 +63,7 @@ const User = ({ route }) => {
 };
 
 export default User;
+
 const styles = StyleSheet.create({
   message: {
     fontWeight: "bold",
