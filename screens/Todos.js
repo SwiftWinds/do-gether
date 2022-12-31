@@ -3,6 +3,7 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
 import * as ImagePicker from "expo-image-picker";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   collection,
   doc,
@@ -15,7 +16,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -31,37 +32,69 @@ import { db, auth, storage } from "../config";
 import alert from "../utils/alert";
 
 const Todo = () => {
+  const [user, setUser] = useState(null);
   const [todos, setTodos] = useState([]);
   const [addData, setAddData] = useState("");
+  const [streak, setStreak] = useState(0);
 
   const navigation = useNavigation();
 
-  const { showActionSheetWithOptions } = useActionSheet();
-
-  const todosRef = collection(db, `users/${auth.currentUser.uid}/todos`);
-
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(todosRef, orderBy("createdAt", "desc")),
-      (querySnapshot) => {
-        const todos = [];
-        querySnapshot.forEach((doc) => {
-          const { title, status } = doc.data();
-          todos.push({
-            id: doc.id,
-            title,
-            status,
-          });
-        });
-        setTodos(todos);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
     return unsubscribe;
   }, []);
+
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const userRef = useMemo(() => {
+    if (!user) return null;
+    return doc(db, "users", user.uid);
+  }, [user]);
+
+  const todosRef = useMemo(() => {
+    if (!userRef) return null;
+    return collection(userRef, "todos");
+  }, [userRef]);
+
+  useEffect(() => {
+    let unsubUser, unsubTodos;
+
+    if (userRef) {
+      unsubUser = onSnapshot(userRef, (doc) => {
+        const { streak } = doc.data();
+        console.log("streak:", streak);
+        setStreak(streak);
+      });
+    }
+
+    if (todosRef) {
+      unsubTodos = onSnapshot(
+        query(todosRef, orderBy("createdAt", "desc")),
+        (querySnapshot) => {
+          const todos = [];
+          querySnapshot.forEach((doc) => {
+            const { title, status } = doc.data();
+            todos.push({
+              id: doc.id,
+              title,
+              status,
+            });
+          });
+          setTodos(todos);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
+
+    return () => {
+      unsubUser?.();
+      unsubTodos?.();
+    };
+  }, [userRef, todosRef]);
 
   const addTodo = async () => {
     if (addData) {
@@ -157,10 +190,7 @@ const Todo = () => {
   const uploadImage = async (imageUri, item) => {
     const blob = await getBlobFromUri(imageUri);
 
-    const storageRef = ref(
-      storage,
-      `users/${auth.currentUser.uid}/todos/${item.id}`
-    );
+    const storageRef = ref(storage, `users/${user?.uid}/todos/${item.id}`);
 
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
@@ -289,6 +319,7 @@ const Todo = () => {
           </View>
         )}
       />
+      <Text style={styles.footerText}>Streak: {streak}</Text>
     </View>
   );
 };
