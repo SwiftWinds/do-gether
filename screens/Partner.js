@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ImageView from "@staltz/react-native-image-viewing";
 import to from "await-to-js";
 import * as Clipboard from "expo-clipboard";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   onSnapshot,
   doc,
@@ -19,47 +20,14 @@ import {
   FlatList,
   Pressable,
 } from "react-native";
+import { Button } from "react-native-web";
 
 import { auth, db } from "../config";
 
 const WEB_API_KEY = "AIzaSyCJ2FY69u3jR8WMVLCT_TDrkKyqkUE2Y3k";
 
-const copyInvitationUrl = async () => {
-  const payload = {
-    dynamicLinkInfo: {
-      domainUriPrefix: "https://dogether.page.link",
-      link: `https://dogether-78b6f.web.app/user/${auth.currentUser.uid}`,
-      androidInfo: {
-        androidPackageName: "gg.dogether.app",
-      },
-      socialMetaTagInfo: {
-        socialTitle: `New invite from ${auth.currentUser.displayName}`,
-        socialDescription: `${auth.currentUser.displayName} is using Dogether to stay accountable and motivated. Join them on their journey!`,
-        // socialImageLink: "<image-url>",
-      },
-    },
-  };
-
-  const url = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${WEB_API_KEY}`;
-  const [error, response] = await to(
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-  );
-  if (error) {
-    alert(error.message);
-    return;
-  }
-  const json = await response.json();
-  await Clipboard.setStringAsync(json.shortLink);
-  alert("Copied to Clipboard!");
-};
-
 const Partner = () => {
+  const [user, setUser] = useState(null);
   const [hasPartner, setHasPartner] = useState(false);
   const [partner, setPartner] = useState(null);
   const [todos, setTodos] = useState([]);
@@ -80,8 +48,16 @@ const Partner = () => {
   const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("user:", user);
+      setUser(user);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     const unsubHasPartner = onSnapshot(
-      doc(db, `users/${auth.currentUser.uid}`),
+      doc(db, `users/${user?.uid}`),
       (doc) => {
         const partner = doc.get("partner");
         setHasPartner(!!partner);
@@ -93,7 +69,7 @@ const Partner = () => {
     );
 
     return unsubHasPartner;
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!partner) {
@@ -126,6 +102,63 @@ const Partner = () => {
 
     return unsubPartnerTodos;
   }, [partner]);
+
+  const copyInvitationUrl = async () => {
+    const payload = {
+      dynamicLinkInfo: {
+        domainUriPrefix: "https://dogether.page.link",
+        link: `https://dogether-78b6f.web.app/user/${user?.uid}`,
+        androidInfo: {
+          androidPackageName: "gg.dogether.app",
+        },
+        socialMetaTagInfo: {
+          socialTitle: `New invite from ${user?.displayName}`,
+          socialDescription: `${user?.displayName} is using Dogether to stay accountable and motivated. Join them on their journey!`,
+          // socialImageLink: "<image-url>",
+        },
+      },
+    };
+
+    const url = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${WEB_API_KEY}`;
+    const [error, response] = await to(
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+    );
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    const json = await response.json();
+    await Clipboard.setStringAsync(json.shortLink);
+    alert("Copied to Clipboard!");
+  };
+
+  const leavePartnership = async () => {
+    let [error] = await to(
+      updateDoc(doc(db, `users/${user?.uid}`), {
+        partner: null,
+      })
+    );
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    [error] = await to(
+      updateDoc(doc(db, `users/${partner}`), {
+        partner: null,
+      })
+    );
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    alert("Left partnership!");
+  };
 
   const showImage = (item) => {
     const index = images.findIndex((image) => image.uri === item.proof);
@@ -176,6 +209,7 @@ const Partner = () => {
               )}
             />
           </View>
+          <Button title="Leave partnership" onPress={leavePartnership} />
         </View>
         <ImageView
           images={images}
