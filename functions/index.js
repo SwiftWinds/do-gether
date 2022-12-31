@@ -12,13 +12,13 @@ const resetStreaksAndDeleteTodos = async () => {
       users.docs.map(async (user) => {
       // get user data
         const userData = user.data();
+        // get todos subcollection ref
+        const todosRef = user.ref.collection("todos");
+        // query todos subcollection for all todos
+        const todos = await todosRef.get();
         // if user has a partner
         if (userData.partner) {
-        // if not all todos are verified, reset streak
-        // get todos subcollection ref
-          const todosRef = user.ref.collection("todos");
-          // query todos subcollection for all todos
-          const todos = await todosRef.get();
+          // if not all todos are verified, reset streak
           // check if all todos are verified
           const allTodosVerified = todos.docs.every(
               (todo) => todo.data().verified,
@@ -29,9 +29,9 @@ const resetStreaksAndDeleteTodos = async () => {
               streak: 0,
             });
           }
-          // delete all todos
-          return Promise.all(todos.docs.map((todo) => todo.ref.delete()));
         }
+        // delete all todos
+        return Promise.all(todos.docs.map((todo) => todo.ref.delete()));
       }),
   );
 };
@@ -55,6 +55,6 @@ const deleteImages = async () => {
 exports.dailyReset = functions.pubsub
     .schedule("0 5 * * *")
     .timeZone("America/Los_Angeles")
-    .onRun(async (context) => {
+    .onRun(async () => {
       await Promise.all([resetStreaksAndDeleteTodos(), deleteImages()]);
     });

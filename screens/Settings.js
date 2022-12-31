@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
   updatePassword,
   updateProfile,
+  onAuthStateChanged,
 } from "firebase/auth";
 import {
   collection,
@@ -31,6 +32,7 @@ import { db, auth, storage } from "../config";
 import AppStyles from "../styles/AppStyles";
 
 const Settings = () => {
+  const [user, setUser] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
   const [displayName, setDisplayName] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -42,23 +44,33 @@ const Settings = () => {
   const { showActionSheetWithOptions } = useActionSheet();
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("user:", user);
+      setUser(user);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    console.log("user", user);
+  }, [user]);
+
+  useEffect(() => {
     console.log("profilePicture", profilePicture);
   }, [profilePicture]);
 
   useEffect(() => {
-    getDoc(doc(db, `users/${auth.currentUser.uid}`)).then((doc) => {
+    console.log("user?.uid", user?.uid);
+    getDoc(doc(db, `users/${user?.uid}`)).then((doc) => {
       setDisplayName(doc.get("displayName"));
     });
 
-    const unsubscribe = onSnapshot(
-      doc(db, `users/${auth.currentUser.uid}`),
-      (doc) => {
-        setProfilePicture(doc.get("photoURL"));
-      }
-    );
+    const unsubscribe = onSnapshot(doc(db, `users/${user?.uid}`), (doc) => {
+      setProfilePicture(doc.get("photoURL"));
+    });
 
     return unsubscribe;
-  }, []);
+  }, [user?.uid]);
 
   const validateChangeProfilePicture = () => {
     if (!currentPassword) {
@@ -119,7 +131,7 @@ const Settings = () => {
   const uploadImage = async (imageUri) => {
     const blob = await getBlobFromUri(imageUri);
 
-    const storageRef = ref(storage, `users/${auth.currentUser.uid}/profile`);
+    const storageRef = ref(storage, `users/${user?.uid}/profile`);
 
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
@@ -138,7 +150,10 @@ const Settings = () => {
       async () => {
         const url = await getDownloadURL(uploadTask.snapshot.ref);
         console.log("Download URL: ", url);
-        updateDoc(doc(db, "users", auth.currentUser.uid), {
+        updateDoc(doc(db, "users", user?.uid), {
+          photoURL: url,
+        });
+        await updateProfile(user, {
           photoURL: url,
         });
       }
@@ -172,45 +187,48 @@ const Settings = () => {
 
   const changeProfilePicture = async () => {
     const [error, userCredentials] = await to(
-      signInWithEmailAndPassword(auth, auth.currentUser.email, currentPassword)
+      signInWithEmailAndPassword(auth, user?.email, currentPassword)
     );
     if (error) {
       setErrorMsg(error.message);
       return;
     }
-    const { user } = userCredentials;
-    askForImage(user);
+    const { user: refreshedUser } = userCredentials;
+    askForImage(refreshedUser);
   };
 
   const updateUserName = async () => {
+    console.log("user?.email", user?.email);
     let [error, userCredentials] = await to(
-      signInWithEmailAndPassword(auth, auth.currentUser.email, currentPassword)
+      signInWithEmailAndPassword(auth, user?.email, currentPassword)
     );
     if (error) {
       setErrorMsg(error.message);
       return;
     }
-    const { user } = userCredentials;
-    [error] = await to(updateProfile(user, { displayName }));
+    const { user: refreshedUser } = userCredentials;
+    [error] = await to(updateProfile(refreshedUser, { displayName }));
     if (error) {
       setErrorMsg(error.message);
       return;
     }
-    const userRef = doc(db, "users", auth.currentUser.uid);
+    await refreshedUser.reload();
+    setUser(refreshedUser);
+    const userRef = doc(db, "users", refreshedUser?.uid);
     await updateDoc(userRef, { displayName });
     setErrorMsg("");
   };
 
   const updateUserPassword = async () => {
     let [error, userCredentials] = await to(
-      signInWithEmailAndPassword(auth, auth.currentUser.email, currentPassword)
+      signInWithEmailAndPassword(auth, user?.email, currentPassword)
     );
     if (error) {
       setErrorMsg(error.message);
       return;
     }
-    const { user } = userCredentials;
-    [error] = await to(updatePassword(user, newPassword));
+    const { user: refreshedUser } = userCredentials;
+    [error] = await to(updatePassword(refreshedUser, newPassword));
     if (error) {
       setErrorMsg(error.message);
       return;
@@ -247,15 +265,15 @@ const Settings = () => {
 
   const deleteUserAccount = async () => {
     let [error, userCredentials] = await to(
-      signInWithEmailAndPassword(auth, auth.currentUser.email, currentPassword)
+      signInWithEmailAndPassword(auth, user?.email, currentPassword)
     );
     if (error) {
       setErrorMsg(error.message);
       return;
     }
-    const { user } = userCredentials;
-    await deleteUserData(user);
-    [error] = await to(deleteUser(user));
+    const { user: refreshedUser } = userCredentials;
+    await deleteUserData(refreshedUser);
+    [error] = await to(deleteUser(refreshedUser));
     if (error) {
       setErrorMsg(error.message);
       return;
@@ -276,7 +294,7 @@ const Settings = () => {
       <ProfilePicture
         isPicture={!!profilePicture}
         URLPicture={profilePicture}
-        user={auth.currentUser.displayName}
+        user={user?.displayName}
         shape="circle"
       />
       <Button title="edit" onPress={validateChangeProfilePicture} />

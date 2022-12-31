@@ -1,15 +1,40 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
-import { collection, updateDoc, doc } from "firebase/firestore";
-import React, { useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, updateDoc, getDoc, doc } from "firebase/firestore";
+import React, { useState, useEffect, useMemo } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 
 import { db, auth } from "../config";
 
 const Detail = ({ route }) => {
-  const todosRef = collection(db, `users/${auth.currentUser.uid}/todos`);
-  const [todoTitle, setTodoTitle] = useState(route.params.item.title);
+  const [todoTitle, setTodoTitle] = useState(route.params.item.title ?? "");
+  const [user, setUser] = useState(null);
+
+  const todosRef = useMemo(
+    () => collection(db, `users/${user?.uid}/todos`),
+    [user]
+  );
+
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("user:", user);
+      setUser(user);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (!route.params.item.title) {
+      getDoc(doc(todosRef, route.params.item.id)).then((doc) => {
+        if (doc.exists()) {
+          setTodoTitle(doc.data().title);
+        }
+      });
+    }
+  }, [todosRef]);
 
   const updateTodo = async () => {
     if (!todoTitle) {

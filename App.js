@@ -7,6 +7,7 @@ import Home from "./screens/Home";
 import Login from "./screens/Login";
 import ResetPassword from "./screens/ResetPassword";
 import Signup from "./screens/Signup";
+import User from "./screens/User";
 import VerifyEmail from "./screens/VerifyEmail";
 
 const Stack = createStackNavigator();
@@ -23,19 +24,28 @@ export default function App() {
               Signup: "signup",
               VerifyEmail: "verify-email",
               ResetPassword: "reset-password",
-              Home: "home",
+              Home: {
+                screens: {
+                  Todos: "todos",
+                  Partner: "partner",
+                  Settings: "settings",
+                },
+              },
               Detail: {
                 path: "detail/:item",
                 stringify: {
                   item: (item) => item.id,
                 },
+                parse: {
+                  item: (item) => ({ id: item }),
+                },
               },
-              // User: {
-              //   path: "user/:uid",
-              //   parse: {
-              //     uid: (uid) => uid,
-              //   },
-              // },
+              User: {
+                path: "user/:uid",
+                parse: {
+                  uid: (uid) => uid,
+                },
+              },
             },
           },
         }}
@@ -47,7 +57,7 @@ export default function App() {
           <Stack.Screen name="ResetPassword" component={ResetPassword} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Detail" component={Detail} />
-          {/* <Stack.Screen name="User" component={User} /> */}
+          <Stack.Screen name="User" component={User} />
         </Stack.Navigator>
       </NavigationContainer>
     </ActionSheetProvider>

@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "predeploy": "expo export:web",
-    "deploy": "npm run predeploy && firebase deploy --only hosting"
+    "deploy": "firebase deploy"
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^4.0.1",
