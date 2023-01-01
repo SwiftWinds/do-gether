@@ -134,6 +134,13 @@ const Todo = () => {
 
       const choice = await new Promise((resolve) =>
         alert("Are your sure?", msg, [
+          // The "Yes" button
+          {
+            text: "Yes",
+            onPress: () => {
+              resolve("Yes");
+            },
+          },
           // The "No" button
           // Does nothing but dismiss the dialog when tapped
           {
@@ -142,16 +149,10 @@ const Todo = () => {
               resolve("No");
             },
           },
-          // The "Yes" button
-          {
-            text: "Yes",
-            onPress: () => {
-              resolve("Yes");
-            },
-          },
         ])
       );
 
+      console.log("choice:", choice);
       if (choice === "No") {
         return;
       }
@@ -205,7 +206,6 @@ const Todo = () => {
       (error) => {
         console.log("upload failed");
         console.log(error);
-        blob.close();
       },
       async () => {
         const url = await getDownloadURL(uploadTask.snapshot.ref);
