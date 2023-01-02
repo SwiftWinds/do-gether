@@ -1,9 +1,109 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2023, 1, 23);
+    function isUpdatingField(fieldName) {
+      return (!(fieldName in resource.data) && fieldName in request.resource.data) || 
+              resource.data[fieldName] != request.resource.data[fieldName];
+    }
+
+    function onlyUpdatesFields(fields) {
+      return request.resource.data.size() == fields.size() &&
+             request.resource.data.keys().hasAll(fields);
+    }
+
+    function isUser() {
+      return request.auth.uid != null;
+    }
+
+    match /users/{userId} {
+      function isOwner() {
+        return request.auth.uid == userId;
+      }
+
+      function validateDisplayName() {
+        return request.auth.token.name == request.resource.data.displayName;
+      }
+
+      function validateEmail() {
+        return request.auth.token.email == request.resource.data.email;
+      }
+
+      function validatePhotoURL() {
+        return request.resource.data.photoURL is string;
+      }
+
+      function validatePartner() {
+        return isOwner() ?
+                exists(/databases/$(database)/documents/users/$(request.resource.data.partner)) :
+                request.auth.uid == request.resource.data.partner;
+      }
+
+      function validateStreak() {
+        return !isUpdatingField('streak') || request.resource.data.streak == 0;
+      }
+
+      function validateChangedUserFields() {
+        return request.resource.data.size() == 5 &&
+               request.resource.data.keys().hasAll(['displayName', 'email', 'photoURL', 'partner', 'streak']) &&
+               validateDisplayName() &&
+               validateEmail() &&
+               validatePhotoURL() &&
+               validatePartner() &&
+               validateStreak();
+      }
+
+      allow get: if isUser();
+
+      allow create, delete: if isOwner();
+
+      // Allow update to non-owners only if the user is updating only the partner field
+      allow update: if (isOwner() && validateChangedUserFields()) ||
+                       (validatePartner() && onlyUpdatesFields(['partner']));
+
+      match /todos/{todoId} {
+        function isPartner() {
+          let partner = get(/databases/$(database)/documents/users/$(userId)).data.partner;
+          return partner == request.auth.uid;
+        }
+
+        function validateOwnerOnlyEditableField(fieldName) {
+          return isOwner() || (isPartner() && !isUpdatingField(fieldName))
+        }
+
+        function validateCreatedAt() {
+          return request.resource.data.createdAt is timestamp &&
+                 validateOwnerOnlyEditableField("createdAt")
+        }
+
+        function validateProof() {
+          return (request.resource.data.proof is string || request.resource.data.proof == null) &&
+                 validateOwnerOnlyEditableField("proof")
+        }
+
+        function validateTitle() {
+          return request.resource.data.title is string &&
+                 validateOwnerOnlyEditableField("title")
+        }
+
+        function validateStatus() {
+          return (isPartner() && request.resource.data.status == 'verified') ||
+                 (isOwner()   && request.resource.data.status in ['unfinished', 'finished'])
+        }
+
+        function validateTodoFields() {
+          return request.resource.data.size() == 4 &&
+                 request.resource.data.keys().hasAll(['createdAt', 'proof', 'title', 'status']) &&
+                 validateCreatedAt() &&
+                 validateProof() &&
+                 validateTitle() &&
+                 validateStatus()
+        }
+s
+        allow create: if isOwner() && validateTodoFields();
+        allow read: if isCurrentUserTodo();
+        allow update: if isCurrentUserTodo();
+        allow delete: if isCurrentUserTodo();
+      }
     }
   }
 }

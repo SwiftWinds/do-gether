@@ -28,6 +28,11 @@ const resetStreaksAndDeleteTodos = async () => {
             await user.ref.update({
               streak: 0,
             });
+          } else {
+            // if all todos are verified, increment streak
+            await user.ref.update({
+              streak: admin.firestore.FieldValue.increment(1),
+            });
           }
         }
         // delete all todos

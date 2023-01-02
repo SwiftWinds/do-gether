@@ -150,10 +150,10 @@ const Settings = () => {
       async () => {
         const url = await getDownloadURL(uploadTask.snapshot.ref);
         console.log("Download URL: ", url);
-        updateDoc(doc(db, "users", user?.uid), {
+        await updateProfile(user, {
           photoURL: url,
         });
-        await updateProfile(user, {
+        await updateDoc(doc(db, "users", user?.uid), {
           photoURL: url,
         });
       }
