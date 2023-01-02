@@ -107,9 +107,9 @@ const Partner = () => {
     const payload = {
       dynamicLinkInfo: {
         domainUriPrefix: "https://dogether.page.link",
-        link: `https://dogether-78b6f.web.app/user/${user?.uid}`,
+        link: `https://dogether.tech/user/${user?.uid}`,
         androidInfo: {
-          androidPackageName: "gg.dogether.app",
+          androidPackageName: "tech.dogether.app",
         },
         socialMetaTagInfo: {
           socialTitle: `New invite from ${user?.displayName}`,
