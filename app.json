@@ -16,11 +16,11 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "gg.dogether.app",
+      "bundleIdentifier": "tech.dogether.app",
       "supportsTablet": true
     },
     "android": {
-      "package": "gg.dogether.app",
+      "package": "tech.dogether.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

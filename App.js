@@ -17,7 +17,7 @@ export default function App() {
     <ActionSheetProvider>
       <NavigationContainer
         linking={{
-          prefixes: ["https://dogether-78b6f.web.app", "dogether://"],
+          prefixes: ["https://dogether.tech", "dogether://"],
           config: {
             screens: {
               Login: "login",
