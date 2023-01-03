@@ -1,8 +1,29 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read, write: if true;
+    function isUser() {
+      return request.auth.uid != null;
+    }
+
+    match /users/{userId} {
+      function isOwner() {
+        return request.auth.uid == userId;
+      }
+
+      function isPartner() {
+        let partner = firestore.get(/databases/$(database)/documents/users/$(userId)).data.partner;
+        return partner == request.auth.uid;
+      }
+
+      match /profile {
+        allow read: isUser();
+        allow write: isOwner();
+      }
+
+      match /todos/{todoId} {
+        allow read: isOwner() || isPartner();
+        allow create, update: isOwner();
+      }
     }
   }
 }
