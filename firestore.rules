@@ -37,6 +37,7 @@ service cloud.firestore {
         return request.resource.data.photoURL is string;
       }
 
+      // TODO: https://firebase.google.com/docs/firestore/manage-data/transactions#data_validation_for_atomic_operations
       function validatePartner() {
         return isOwner() ?
                 exists(/databases/$(database)/documents/users/$(request.resource.data.partner)) :
@@ -59,7 +60,7 @@ service cloud.firestore {
 
       allow get: if isUser();
 
-      allow create, delete: if isOwner();
+      allow create, delete: if isOwner(); // TODO: https://firebase.google.com/docs/firestore/manage-data/transactions#data_validation_for_atomic_operations
 
       // Allow update to non-owners only if the user is updating only the partner field
       allow update: if (isOwner() && validateChangedUserFields()) ||
