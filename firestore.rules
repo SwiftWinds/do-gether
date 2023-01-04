@@ -25,46 +25,97 @@ service cloud.firestore {
         return request.auth.uid == userId;
       }
 
-      function validateDisplayName() {
+      function isPreviousPartner() {
+        return request.auth.uid == resource.data.partner;
+      }
+
+      function isFuturePartner() {
+        return request.auth.uid == request.resource.data.partner;
+      }
+
+      function validateCreateDisplayName() {
         return request.auth.token.name == request.resource.data.displayName;
       }
 
-      function validateEmail() {
+      function validateUpdateDisplayName() {
+        return validateCreateDisplayName();
+      }
+
+      function validateCreateEmail() {
         return request.auth.token.email == request.resource.data.email;
       }
 
-      function validatePhotoURL() {
+      function validateUpdateEmail() {
+        return validateCreateEmail();
+      }
+
+      function validateCreatePhotoURL() {
         return request.resource.data.photoURL is string;
       }
 
+      function validateUpdatePhotoURL() {
+        return validateCreatePhotoURL();
+      }
+
+      function validateCreatePartner() {
+        return request.resource.data.partner == null;
+      }
+
       // TODO: https://firebase.google.com/docs/firestore/manage-data/transactions#data_validation_for_atomic_operations
-      function validatePartner() {
-        return isOwner() ?
-                exists(/databases/$(database)/documents/users/$(request.resource.data.partner)) :
-                request.auth.uid == request.resource.data.partner;
+      function validateUpdatePartner() {
+        let prevPartnerUid = resource.data.partner;
+        let prevPartnerRef = /databases/$(database)/documents/users/$(prevPartnerUid);
+        let prevPartnersNewPartnerUid = getAfter(prevPartnerRef).data.partner;
+        let prevPartnersNewPartnerRef = /databases/$(database)/documents/users/$(prevPartnersNewPartnerUid);
+        let partnerUid = request.resource.data.partner;
+        let partnerRef = /databases/$(database)/documents/users/$(partnerUid);
+        return !isUpdatingField("partner") ||
+               (isOwner() && prevPartnerUid != null && partnerUid == null && getAfter(prevPartnerRef).data.partner == null) || // Owner leaves partnership
+               (isOwner() && prevPartnerUid == null && partnerUid != null && getAfter(partnerRef).data.partner == userId) || // Owner creates partnership
+               (isOwner() && prevPartnerUid != null && partnerUid != null && getAfter(prevPartnerRef).data.partner == null && getAfter(partnerRef).data.partner == userId) || // Owner changes partner
+               (isPreviousPartner() && partnerUid == null && getAfter(prevPartnerRef).data.partner == null) || // Previous partner leaves partnership
+               (isFuturePartner() && (prevPartnerUid == null || getAfter(prevPartnerRef).data.partner == null) && getAfter(partnerRef).data.partner == userId) || // New partner creates partnership
+               (isPreviousPartner() && partnerUid == null && getAfter(prevPartnersNewPartnerRef).data.partner == prevPartnerUid) // Previous partner changes partner
       }
 
-      function validateStreak() {
-        return !isUpdatingField('streak') || 
-               (request.resource.data.streak == 0 && resource.data.streak == null);
+      function validateCreateStreak() {
+        return request.resource.data.streak == 0;
       }
 
-      function validateChangedUserFields() {
+      function validateUpdateStreak() {
+        return !isUpdatingField("streak");
+      }
+
+      function validateCreateUserFields() {
         return hasFields(['displayName', 'email', 'photoURL', 'partner', 'streak']) &&
-               validateDisplayName() &&
-               validateEmail() &&
-               validatePhotoURL() &&
-               validatePartner() &&
-               validateStreak();
+                validateCreateDisplayName() &&
+                validateCreateEmail() &&
+                validateCreatePhotoURL() &&
+                validateCreatePartner() &&
+                validateCreateStreak();
+      }
+
+      function validateUpdateUserFields() {
+        return hasFields(['displayName', 'email', 'photoURL', 'partner', 'streak']) &&
+               validateUpdateDisplayName() &&
+               validateUpdateEmail() &&
+               validateUpdatePhotoURL() &&
+               validateUpdatePartner() &&
+               validateUpdateStreak();
+      }
+
+      function validateDeleteUserFields() {
+        return !existsAfter(/databases/$(database)/documents/users/$(userId)/todos);
       }
 
       allow get: if isUser();
 
-      allow create, delete: if isOwner(); // TODO: https://firebase.google.com/docs/firestore/manage-data/transactions#data_validation_for_atomic_operations
+      allow create: if isOwner() && validateCreateUserFields();
+      allow delete: if isOwner() && validateDeleteUserFields();
 
       // Allow update to non-owners only if the user is updating only the partner field
-      allow update: if (isOwner() && validateChangedUserFields()) ||
-                       (validatePartner() && onlyUpdatesFields(['partner']));
+      allow update: if (isOwner() && validateUpdateUserFields()) ||
+                       (validateUpdatePartner() && onlyUpdatesFields(['partner']));
 
       match /todos/{todoId} {
         function isPartner() {
@@ -73,7 +124,7 @@ service cloud.firestore {
         }
 
         function validateCreatedAt() {
-          return request.resource.data.createdAt is timestamp;
+          return request.resource.data.createdAt == request.time;
         }
 
         function validateProof() {

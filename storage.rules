@@ -16,13 +16,17 @@ service firebase.storage {
       }
 
       match /profile {
-        allow read: isUser();
-        allow write: isOwner();
+        allow read: if isUser();
+        allow write: if isOwner();
       }
 
       match /todos/{todoId} {
-        allow read: isOwner() || isPartner();
-        allow create, update: isOwner();
+        function todoExists() {
+          return firestore.exists(/databases/$(database)/documents/users/$(userId)/todos/$(todoId));
+        }
+
+        allow read: if isOwner() || isPartner();
+        allow create, update: if isOwner() && todoExists();
       }
     }
   }

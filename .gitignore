@@ -27,3 +27,7 @@ dogether.keystore
 .firebase/
 
 # End of https://www.toptal.com/developers/gitignore/api/firebase
+
+
+# Firebase emulator logs
+*-debug.log
