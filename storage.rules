@@ -26,7 +26,7 @@ service firebase.storage {
         }
 
         allow read: if isOwner() || isPartner();
-        allow create, update: if isOwner() && todoExists();
+        allow create, update: if isOwner() && todoExists(); // TODO: separate create and update based on if proof field exists in firestore todo
       }
     }
   }
