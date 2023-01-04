@@ -1,55 +1,79 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, writeBatch } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import ProfilePicture from "react-native-profile-picture";
 
 import { db, auth } from "../config";
 
 const User = ({ route }) => {
+  const [partner, setPartner] = useState(null);
   const [user, setUser] = useState(null);
 
   const navigation = useNavigation();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log("user:", user);
+    const unsubLoggedIn = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      if (!user) {
+        navigation.navigate("Login");
+      }
     });
-    return unsubscribe;
+
+    const unsubInviter = onSnapshot(
+      doc(db, "users", route.params.uid),
+      (doc) => {
+        setPartner(doc.data());
+      }
+    );
+
+    return () => {
+      unsubLoggedIn();
+      unsubInviter();
+    };
   }, []);
 
-  const addPartner = async (user) => {
+  const addPartner = async () => {
+    const batch = writeBatch(db);
+
     const userDoc = await getDoc(doc(db, "users", user.uid));
-    const { partner } = userDoc.data();
-    if (partner) {
-      await updateDoc(doc(db, "users", partner), { partner: null });
+
+    // If the user already has a partner, remove the partner from the other user
+    const { partner: prevPartner } = userDoc.data();
+    if (prevPartner) {
+      batch.update(doc(db, "users", prevPartner), { partner: null });
     }
-    let [error] = await to(
-      updateDoc(doc(db, "users", user.uid), { partner: route.params.uid })
-    );
+
+    batch.update(doc(db, "users", user.uid), {
+      partner: partner.uid,
+    });
+    batch.update(doc(db, "users", partner.uid), {
+      partner: user.uid,
+    });
+
+    const [error] = await to(batch.commit());
     if (error) {
-      console.log(error);
+      console.log("error adding partner", error);
       return;
     }
-    console.log("Partner added successfully!");
-    [error] = await to(
-      updateDoc(doc(db, "users", route.params.uid), { partner: user.uid })
-    );
-    if (error) {
-      console.log(error);
-      return;
-    }
-    console.log("Partner added successfully!");
+
     navigation.navigate("Home");
   };
+
   return (
     <View style={styles.container}>
+      <ProfilePicture
+        isPicture={!!partner?.photoURL}
+        URLPicture={partner?.photoURL}
+        user={partner?.displayName}
+        shape="circle"
+      />
       <Text style={styles.message}>
-        You have received an invitation from {user?.displayName}!
+        You have received an invitation from {partner?.displayName}!
       </Text>
-      <TouchableOpacity style={styles.button} onPress={() => addPartner(user)}>
+      <TouchableOpacity style={styles.button} onPress={() => addPartner()}>
         <Text>Accept</Text>
       </TouchableOpacity>
       <TouchableOpacity
