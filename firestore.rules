@@ -7,8 +7,9 @@ service cloud.firestore {
     }
 
     function onlyUpdatesFields(fields) {
-      return request.resource.data.size() == fields.size() &&
-             request.resource.data.diff(resource.data).changedKeys().hasAll(fields)
+      let changedKeys = request.resource.data.diff(resource.data).changedKeys();
+      return changedKeys.size() == fields.size() &&
+             changedKeys.hasAll(fields);
     }
 
     function hasFields(fields) {
@@ -34,7 +35,7 @@ service cloud.firestore {
       }
 
       function validateCreateDisplayName() {
-        return request.auth.token.name == request.resource.data.displayName;
+        return request.resource.data.displayName is string && request.resource.data.displayName.size() > 0;
       }
 
       function validateUpdateDisplayName() {
@@ -42,7 +43,7 @@ service cloud.firestore {
       }
 
       function validateCreateEmail() {
-        return request.auth.token.email == request.resource.data.email;
+        return request.resource.data.email is string && request.resource.data.email.matches('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$');
       }
 
       function validateUpdateEmail() {
@@ -124,20 +125,20 @@ service cloud.firestore {
         }
 
         function validateCreatedAt() {
-          return request.resource.data.createdAt == request.time;
+          return !isUpdatingField("createdAt") || request.resource.data.createdAt == request.time;
         }
 
         function validateProof() {
-          return (request.resource.data.proof is string || request.resource.data.proof == null);
+          return (request.resource.data.proof is string) || (request.resource.data.proof == null);
         }
 
         function validateTitle() {
           return request.resource.data.title is string;
         }
 
-        function validateStatus() {
+        function validateStatus() { // TODO: ensure proof is a URL if status is set to finished
           return (isOwner()   && request.resource.data.status in ['unfinished', 'finished']) ||
-                 (isPartner() && request.resource.data.status == 'verified')        
+                 (isPartner() && request.resource.data.status == 'verified')
         }
 
         function validateTodoFields() {
