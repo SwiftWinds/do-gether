@@ -258,7 +258,7 @@ const Settings = () => {
     }
 
     // remove profile picture from storage if they have one
-    const profilePictureRef = ref(storage, `profilePictures/${uid}`);
+    const profilePictureRef = ref(storage, `users/${uid}/profile`);
 
     await Promise.all([batch.commit(), to(deleteObject(profilePictureRef))]);
   };

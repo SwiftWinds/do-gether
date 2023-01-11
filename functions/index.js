@@ -28,8 +28,8 @@ const resetStreaksAndDeleteTodos = async () => {
             await user.ref.update({
               streak: 0,
             });
-          } else {
-            // if all todos are verified, increment streak
+          } else if (todos.docs.length > 0) {
+            // if there are at least 1 verified todo, increment streak
             await user.ref.update({
               streak: admin.firestore.FieldValue.increment(1),
             });

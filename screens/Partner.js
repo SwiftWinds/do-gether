@@ -10,6 +10,7 @@ import {
   collection,
   query,
   orderBy,
+  writeBatch,
 } from "firebase/firestore";
 import React, { useState, useEffect, useMemo } from "react";
 import {
@@ -29,7 +30,7 @@ const WEB_API_KEY = "AIzaSyCJ2FY69u3jR8WMVLCT_TDrkKyqkUE2Y3k";
 const Partner = () => {
   const [user, setUser] = useState(null);
   const [hasPartner, setHasPartner] = useState(false);
-  const [partner, setPartner] = useState(null);
+  const [partnerUid, setPartnerUid] = useState(null);
   const [todos, setTodos] = useState([]);
   const images = useMemo(() => {
     const images = [];
@@ -56,29 +57,29 @@ const Partner = () => {
   }, []);
 
   useEffect(() => {
-    const unsubHasPartner = onSnapshot(
+    const unsubPartner = onSnapshot(
       doc(db, `users/${user?.uid}`),
       (doc) => {
-        const partner = doc.get("partner");
-        setHasPartner(!!partner);
-        setPartner(partner);
+        const partnerUid = doc.get("partner");
+        setHasPartner(!!partnerUid);
+        setPartnerUid(partnerUid);
       },
       (error) => {
         console.log(error);
       }
     );
 
-    return unsubHasPartner;
+    return unsubPartner;
   }, [user]);
 
   useEffect(() => {
-    if (!partner) {
+    if (!partnerUid) {
       return;
     }
 
     const unsubPartnerTodos = onSnapshot(
       query(
-        collection(db, `users/${partner}/todos`),
+        collection(db, `users/${partnerUid}/todos`),
         orderBy("createdAt", "desc")
       ),
       (querySnapshot) => {
@@ -101,7 +102,7 @@ const Partner = () => {
     );
 
     return unsubPartnerTodos;
-  }, [partner]);
+  }, [partnerUid]);
 
   const copyInvitationUrl = async () => {
     const payload = {
@@ -139,24 +140,22 @@ const Partner = () => {
   };
 
   const leavePartnership = async () => {
-    let [error] = await to(
-      updateDoc(doc(db, `users/${user?.uid}`), {
-        partner: null,
-      })
-    );
+    const batch = writeBatch(db);
+
+    batch.update(doc(db, `users/${user?.uid}`), {
+      partner: null,
+    });
+
+    batch.update(doc(db, `users/${partnerUid}`), {
+      partner: null,
+    });
+
+    const [error] = await to(batch.commit());
     if (error) {
       alert(error.message);
       return;
     }
-    [error] = await to(
-      updateDoc(doc(db, `users/${partner}`), {
-        partner: null,
-      })
-    );
-    if (error) {
-      alert(error.message);
-      return;
-    }
+
     alert("Left partnership!");
   };
 
@@ -223,7 +222,10 @@ const Partner = () => {
                 style={styles.footerButton}
                 onPress={() => {
                   updateDoc(
-                    doc(db, `users/${partner}/todos/${images[imageIndex].id}`),
+                    doc(
+                      db,
+                      `users/${partnerUid}/todos/${images[imageIndex].id}`
+                    ),
                     {
                       status: "verified",
                     }

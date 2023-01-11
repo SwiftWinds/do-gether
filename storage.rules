@@ -11,7 +11,7 @@ service firebase.storage {
       }
 
       function isPartner() {
-        let partner = firestore.get(/databases/$(database)/documents/users/$(userId)).data.partner;
+        let partner = firestore.get(/databases/(default)/documents/users/$(userId)).data.partner;
         return partner == request.auth.uid;
       }
 
@@ -22,7 +22,7 @@ service firebase.storage {
 
       match /todos/{todoId} {
         function todoExists() {
-          return firestore.exists(/databases/$(database)/documents/users/$(userId)/todos/$(todoId));
+          return firestore.exists(/databases/(default)/documents/users/$(userId)/todos/$(todoId));
         }
 
         allow read: if isOwner() || isPartner();
