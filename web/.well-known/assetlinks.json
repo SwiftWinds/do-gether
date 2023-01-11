@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "tech.dogether.app",
+      "sha256_cert_fingerprints": [
+        "43:34:78:06:8F:79:57:41:76:C4:EF:B0:33:21:6B:F1:ED:17:BD:1B:83:A6:67:7C:40:CE:87:F2:01:D2:BA:83"
+      ]
+    }
+  }
+]
