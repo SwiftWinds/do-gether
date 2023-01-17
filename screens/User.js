@@ -25,7 +25,10 @@ const User = ({ route }) => {
     const unsubInviter = onSnapshot(
       doc(db, "users", route.params.uid),
       (doc) => {
-        setPartner(doc.data());
+        setPartner({
+          ...doc.data(),
+          uid: doc.id,
+        });
       }
     );
 
@@ -45,6 +48,9 @@ const User = ({ route }) => {
     if (prevPartner) {
       batch.update(doc(db, "users", prevPartner), { partner: null });
     }
+
+    console.log("user", user.uid);
+    console.log("partner", partner.uid);
 
     batch.update(doc(db, "users", user.uid), {
       partner: partner.uid,
