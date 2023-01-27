@@ -14,7 +14,7 @@ import InlineBtn from "../components/InlineBtn";
 import { auth } from "../config";
 import AppStyles from "../styles/AppStyles";
 
-export default function Login() {
+export default function Login({ route }) {
   const backgroundImg = require("../assets/background.jpg");
 
   const [email, setEmail] = useState("");
@@ -60,7 +60,13 @@ export default function Login() {
     setEmail("");
     setPassword("");
     setErrorMsg("");
-    navigation.navigate("Home");
+    const { redirectTo } = route.params ?? {};
+    console.log("redirectTo:", redirectTo);
+    if (redirectTo) {
+      navigation.navigate(redirectTo.screen, redirectTo.params);
+    } else {
+      navigation.navigate("Home");
+    }
   };
 
   return (
