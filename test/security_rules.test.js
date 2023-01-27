@@ -13,7 +13,6 @@ const bobUid = "bob";
 describe("Dogether", () => {
   let testEnv;
   let aliceUser, aliceUserDb;
-  let bobUser, bobUserDb;
   let unauthenticatedUser, unauthenticatedUserDb;
 
   beforeAll(async () => {
@@ -30,8 +29,6 @@ describe("Dogether", () => {
     // Create authenticated and unauthenticated users for testing
     aliceUser = testEnv.authenticatedContext(aliceUid);
     aliceUserDb = aliceUser.firestore();
-    bobUser = testEnv.authenticatedContext(bobUid);
-    bobUserDb = bobUser.firestore();
     unauthenticatedUser = testEnv.unauthenticatedContext();
     unauthenticatedUserDb = unauthenticatedUser.firestore();
   });
