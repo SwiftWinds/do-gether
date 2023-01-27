@@ -9,25 +9,8 @@ service firebase.storage {
       function isOwner() {
         return request.auth.uid == userId;
       }
-
-      function isPartner() {
-        let partner = firestore.get(/databases/(default)/documents/users/$(userId)).data.partner;
-        return partner == request.auth.uid;
-      }
-
-      match /profile {
-        allow read: if isUser();
-        allow write: if isOwner();
-      }
-
-      match /todos/{todoId} {
-        function todoExists() {
-          return firestore.exists(/databases/(default)/documents/users/$(userId)/todos/$(todoId));
-        }
-
-        allow read: if isOwner() || isPartner();
-        allow create, update: if isOwner() && todoExists(); // TODO: separate create and update based on if proof field exists in firestore todo
-      }
+      allow read: if isUser();
+      allow write: if isOwner();
     }
   }
 }
