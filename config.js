@@ -4,9 +4,10 @@ import {
   getReactNativePersistence,
   initializeAuth,
   getAuth,
+  connectAuthEmulator,
 } from "firebase/auth/react-native";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCJ2FY69u3jR8WMVLCT_TDrkKyqkUE2Y3k",
@@ -31,5 +32,11 @@ if (getApps().length === 0) {
 
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+if (__DEV__) {
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  connectStorageEmulator(storage, "localhost", 9199);
+  connectAuthEmulator(auth, "http://localhost:9099");
+}
 
 export { auth, db, storage };

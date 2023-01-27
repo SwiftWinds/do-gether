@@ -45,7 +45,7 @@ export default function Signup() {
   const createUserDoc = (user) => {
     const userDoc = doc(db, "users", user.uid);
     return setDoc(userDoc, {
-      displayName: user.displayName,
+      displayName: user.displayName || "",
       email: user.email,
       photoURL: user.photoURL,
       partner: null,

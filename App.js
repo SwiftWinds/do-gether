@@ -20,10 +20,6 @@ export default function App() {
           prefixes: ["https://dogether.tech", "dogether://"],
           config: {
             screens: {
-              Login: "login",
-              Signup: "signup",
-              VerifyEmail: "verify-email",
-              ResetPassword: "reset-password",
               Home: {
                 screens: {
                   Todos: "todos",
@@ -46,18 +42,30 @@ export default function App() {
                   uid: (uid) => uid,
                 },
               },
+              Login: {
+                path: "login",
+                stringify: {
+                  redirectTo: () => undefined,
+                },
+                parse: {
+                  redirectTo: (redirectTo) => ({ uid: redirectTo }),
+                },
+              },
+              Signup: "signup",
+              VerifyEmail: "verify-email",
+              ResetPassword: "reset-password",
             },
           },
         }}
       >
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Detail" component={Detail} />
+          <Stack.Screen name="User" component={User} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
           <Stack.Screen name="ResetPassword" component={ResetPassword} />
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Detail" component={Detail} />
-          <Stack.Screen name="User" component={User} />
         </Stack.Navigator>
       </NavigationContainer>
     </ActionSheetProvider>

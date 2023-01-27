@@ -18,7 +18,13 @@ const User = ({ route }) => {
     const unsubLoggedIn = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (!user) {
-        navigation.navigate("Login");
+        console.log("route.params", route.params);
+        navigation.navigate("Login", {
+          redirectTo: {
+            screen: "User",
+            params: route.params,
+          },
+        });
       }
     });
 
