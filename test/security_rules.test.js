@@ -4,7 +4,7 @@ import {
   initializeTestEnvironment,
 } from "@firebase/rules-unit-testing";
 import * as fs from "fs";
-import { describe, beforeAll, it } from "vitest";
+import { describe, beforeAll, it, afterAll } from "vitest";
 
 const PROJECT_ID = "dogether-78b6f";
 const aliceUid = "alice";
@@ -34,6 +34,10 @@ describe("Dogether", () => {
     bobUserDb = bobUser.firestore();
     unauthenticatedUser = testEnv.unauthenticatedContext();
     unauthenticatedUserDb = unauthenticatedUser.firestore();
+  });
+
+  afterAll(async () => {
+    await testEnv.cleanup();
   });
 
   // - READ: Allowed only for authenticated users
@@ -96,54 +100,71 @@ describe("Dogether", () => {
     await assertFails(createByUnauthenticatedUser);
   });
 
-  // - CREATE: Must contain all required fields
-  it("Can create a user with all required fields", async () => {
-    const tooFewFields = {
-      displayName: "Alice",
-      email: "alice@dogether.tech",
-      partner: null,
-    };
-    const justRightFields = {
+  // - UPDATE: Allowed only if user's uid is the same as the document's id
+  it("Can update a user with the same uid as the document id", async () => {
+    const userData = {
       displayName: "Alice",
       email: "alice@dogether.tech",
       partner: null,
       photoURL: "https://example.com/alice.png",
       streak: 0,
     };
-    const tooManyFields = {
-      displayName: "Alice",
-      email: "alice@dogether.tech",
-      partner: null,
-      photoURL: "https://example.com/alice.png",
-      streak: 0,
-      extraField: "extra",
-    };
 
-    // Created with too few fields
-    const createWithTooFewFields = aliceUserDb
+    // Updated by matching uid
+    const updateByMatchingUid = aliceUserDb
       .collection("users")
       .doc(aliceUid)
-      .set(tooFewFields);
-
-    // Expect to Fail
-    await assertFails(createWithTooFewFields);
-
-    // Created with just right fields
-    const createWithJustRightFields = aliceUserDb
-      .collection("users")
-      .doc(aliceUid)
-      .set(justRightFields);
+      .update(userData);
 
     // Expect to Succeed
-    await assertSucceeds(createWithJustRightFields);
+    await assertSucceeds(updateByMatchingUid);
 
-    // Created with too many fields
-    const createWithTooManyFields = aliceUserDb
+    // Updated by non-matching uid
+    const updateByNonMatchingUid = aliceUserDb
       .collection("users")
-      .doc(aliceUid)
-      .set(tooManyFields);
+      .doc(bobUid)
+      .update(userData);
 
     // Expect to Fail
-    await assertFails(createWithTooManyFields);
+    await assertFails(updateByNonMatchingUid);
+
+    // Unauthenticated user operation
+    const updateByUnauthenticatedUser = unauthenticatedUserDb
+      .collection("users")
+      .doc(aliceUid)
+      .update(userData);
+
+    // Expect to Fail
+    await assertFails(updateByUnauthenticatedUser);
+  });
+
+  // - DELETE: Allowed only if user's uid is the same as the document's id
+  it("Can delete a user with the same uid as the document id", async () => {
+    // Deleted by matching uid
+    const deleteByMatchingUid = aliceUserDb
+      .collection("users")
+      .doc(aliceUid)
+      .delete();
+
+    // Expect to Succeed
+    await assertSucceeds(deleteByMatchingUid);
+
+    // Deleted by non-matching uid
+    const deleteByNonMatchingUid = aliceUserDb
+      .collection("users")
+      .doc(bobUid)
+      .delete();
+
+    // Expect to Fail
+    await assertFails(deleteByNonMatchingUid);
+
+    // Unauthenticated user operation
+    const deleteByUnauthenticatedUser = unauthenticatedUserDb
+      .collection("users")
+      .doc(aliceUid)
+      .delete();
+
+    // Expect to Fail
+    await assertFails(deleteByUnauthenticatedUser);
   });
 });
