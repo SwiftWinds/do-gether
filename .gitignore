@@ -31,3 +31,6 @@ dogether.keystore
 
 # Firebase emulator logs
 *-debug.log
+
+# Firebase local emulator export
+export/

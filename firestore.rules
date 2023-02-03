@@ -5,7 +5,7 @@ service cloud.firestore {
       return request.auth.uid != null;
     }
 
-    match /users/{userId} {
+    match /users/{userId}/{document=**} {
       function isOwner() {
         return request.auth.uid == userId;
       }

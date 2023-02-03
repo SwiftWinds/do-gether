@@ -5,7 +5,7 @@ service firebase.storage {
       return request.auth.uid != null;
     }
 
-    match /users/{userId} {
+    match /users/{userId}/{filename=**} {
       function isOwner() {
         return request.auth.uid == userId;
       }
