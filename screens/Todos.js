@@ -1,5 +1,8 @@
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { FAB } from "@react-native-material/core";
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
 import * as ImagePicker from "expo-image-picker";
@@ -16,7 +19,13 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import React, { useState, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import {
   View,
   Text,
@@ -47,6 +56,14 @@ const Todo = () => {
   }, []);
 
   const { showActionSheetWithOptions } = useActionSheet();
+
+  const bottomSheetRef = useRef(null);
+
+  const snapPoints = useMemo(() => ["25%", "50%"], []);
+
+  const handleSheetChanges = useCallback((index) => {
+    console.log("handleSheetChanges", index);
+  }, []);
 
   const userRef = useMemo(() => {
     if (!user) return null;
@@ -320,6 +337,21 @@ const Todo = () => {
         )}
       />
       <Text style={styles.footerText}>Streak: {streak}</Text>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={1}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+      >
+        <View style={styles.contentContainer}>
+          <Text>Awesome 🎉</Text>
+        </View>
+      </BottomSheet>
+      {/* Facing issues, see: https://stackoverflow.com/questions/75300503/attempting-to-run-js-driven-animation-on-animated-node-that-has-been-moved-to-n */}
+      {/* <FAB
+        icon={(props) => <Icon name="plus" {...props} />}
+        style={styles.fab}
+      /> */}
     </View>
   );
 };
@@ -327,6 +359,16 @@ const Todo = () => {
 export default Todo;
 
 const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  fab: {
+    position: "absolute",
+    bottom: 20,
+    right: 30,
+    alignSelf: "center",
+  },
   container: {
     backgroundColor: "e5e5e5",
     padding: 15,
