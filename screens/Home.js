@@ -1,10 +1,11 @@
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
 import React, { useEffect } from "react";
 
 import { auth } from "../config";
+import TaskCalendar from "./Calendar";
 import Partner from "./Partner";
 import Settings from "./Settings";
 import Todos from "./Todos";
@@ -31,6 +32,15 @@ const Home = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="list-ul" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Calendar"
+        component={TaskCalendar}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="calendar-day" color={color} size={size} />
           ),
         }}
       />
