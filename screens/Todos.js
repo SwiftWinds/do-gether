@@ -1,8 +1,6 @@
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { FAB } from "@react-native-material/core";
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
 import * as ImagePicker from "expo-image-picker";
