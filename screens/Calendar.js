@@ -1,100 +1,78 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
+import { FAB } from "@rneui/themed";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import React, { useEffect, useMemo, useState } from "react";
+import { StyleSheet, SafeAreaView, FlatList, Text } from "react-native";
 import Calendar from "react-native-calendars/src/calendar";
 
-const TaskCalendar = () => {
-  const [showModal, setShowModal] = useState(false);
-  return (
-    <View>
-      <TouchableOpacity
-        onPress={() => setShowModal(true)}
-        style={{
-          backgroundColor: "black",
-          borderRadius: 10,
-          margin: 40,
-          padding: 10,
-          width: 200,
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ color: "white", fontSize: 22 }}>Show Calendar</Text>
-      </TouchableOpacity>
-      <Modal visible={showModal} animationType="fade">
-        <SafeAreaView style={styles.container}>
-          <Calendar
-            style={{ borderRadius: 10, elevation: 4, margin: 40 }}
-            onDayPress={(day) => {
-              console.log(day);
-              setShowModal(false);
-            }}
-            // onMonthChange={() => {}}
-            // initialDate="2022-09-10"
-            // minDate="2022-01-01"
-            // maxDate="2022-12-31"
-            // hideExtraDays
-            // markedDates={{
-            //   "2022-09-16": {
-            //     marked: true,
-            //     dotColor: "red",
-            //     selected: true,
-            //     selectedColor: "purple",
-            //     selectedTextColor: "black",
-            //   },
-            // }}
-            // markingType="multi-dot"
-            // markedDates={{
-            //   "2022-09-15": {
-            //     dots: [{ color: "red" }, { color: "green" }],
-            //     selected: true,
-            //     selectedColor: "lightblue",
-            //     selectedTextColor: "black",
-            //   },
-            //   "2022-09-20": {
-            //     dots: [{ color: "orange" }],
-            //   },
-            // }}
+import { auth, db } from "../config";
 
-            // periods
-            // markingType="period"
-            // markedDates={{
-            //   "2022-09-12": {
-            //     startingDay: true,
-            //     color: "lightgreen",
-            //   },
-            //   "2022-09-13": {
-            //     marked: true,
-            //     color: "lightgreen",
-            //     dotColor: "transparent",
-            //   },
-            //   "2022-09-14": {
-            //     marked: true,
-            //     color: "lightgreen",
-            //   },
-            //   "2022-09-15": {
-            //     marked: true,
-            //     color: "lightgreen",
-            //   },
-            //   "2022-09-16": {
-            //     endingDay: true,
-            //     color: "lightgreen",
-            //   },
-            //   "2022-09-25": {
-            //     startingDay: true,
-            //     endingDay: true,
-            //     color: "orange",
-            //   },
-            // }}
-          />
-        </SafeAreaView>
-      </Modal>
-    </View>
+const TaskCalendar = () => {
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [todos, setTodos] = useState([]);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (todosRef && selectedDate) {
+      const unsubscribe = onSnapshot(
+        query(todosRef, where("dueAt", "==", selectedDate)),
+        (snapshot) => {
+          const todos = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          console.log("todos", todos);
+          setTodos(todos);
+        }
+      );
+      return unsubscribe;
+    }
+  }, [todosRef, selectedDate]);
+
+  const todosRef = useMemo(() => {
+    if (user) {
+      return collection(db, "users", user.uid, "todos");
+    }
+    return null;
+  }, [user]);
+
+  return (
+    // <View>
+    //   <Modal visible animationType="fade">
+    <SafeAreaView style={styles.container}>
+      <Calendar
+        style={{ borderRadius: 10, elevation: 4 }}
+        current={selectedDate}
+        onDayPress={(day) => {
+          setSelectedDate(day.dateString);
+        }}
+        markedDates={{
+          [selectedDate]: {
+            selected: true,
+            selectedColor: "#2E66E7",
+          },
+        }}
+      />
+      <FlatList
+        data={todos}
+        renderItem={({ item }) => <Text>{item.title}</Text>}
+        keyExtractor={(item) => item.id}
+      />
+      <FAB icon={{ name: "add", color: "white" }} color="green" />
+    </SafeAreaView>
+    //   </Modal>
+    // </View>
   );
 };
 
@@ -102,8 +80,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 80,
-    marginLeft: 15,
-    marginRight: 15,
+    marginLeft: 30,
+    marginRight: 30,
   },
 });
 
