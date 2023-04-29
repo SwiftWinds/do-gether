@@ -10,7 +10,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
+    //alignItems: "center",
     justifyContent: "center",
     padding: 16,
   },
@@ -37,6 +37,7 @@ export default StyleSheet.create({
   },
   header: {
     fontSize: 20,
+    alighSelf: "center",
   },
   textInput: {
     alignSelf: "stretch",

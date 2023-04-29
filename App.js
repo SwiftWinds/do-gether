@@ -9,6 +9,7 @@ import ResetPassword from "./screens/ResetPassword";
 import Signup from "./screens/Signup";
 import User from "./screens/User";
 import VerifyEmail from "./screens/VerifyEmail";
+import * as Font from "expo-font";
 
 const Stack = createStackNavigator();
 
