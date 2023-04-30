@@ -102,7 +102,9 @@ export default function Login({ route }) {
         <TextInput
           style={[styles.textInput]}
           autoCapitalize="none"
-          placeholder="Email"
+          //make placeholder text with customText
+
+          //placeholder="Email"
           placeholderTextColor="#bebebe"
           returnKeyType="next"
           keyboardType="email-address"
@@ -113,11 +115,7 @@ export default function Login({ route }) {
       </View>
       <View style={styles.roundedContainer}>
         <TextInput
-          style={[
-            AppStyles.textInput,
-            AppStyles.lightTextInput,
-            AppStyles.lightText,
-          ]}
+          style={[styles.textInput]}
           placeholder="Password"
           placeholderTextColor="#DCDCDC"
           returnKeyType="go"
@@ -167,6 +165,7 @@ const styles = StyleSheet.create({
   },
   //text style for input aligned to left with color black with opacity 47%
   textInput: {
+    fontFamily: "custom-font",
     fontSize: 20,
     alignSelf: "center",
     alignItems: "flex-start",
