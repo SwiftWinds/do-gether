@@ -37,6 +37,7 @@ import {
 
 import { db, auth, storage } from "../config";
 import alert from "../utils/alert";
+import toYYYYMMDD from "../utils/date";
 
 const Todo = () => {
   const [user, setUser] = useState(null);
@@ -88,15 +89,10 @@ const Todo = () => {
       unsubTodos = onSnapshot(
         query(todosRef, orderBy("createdAt", "desc")),
         (querySnapshot) => {
-          const todos = [];
-          querySnapshot.forEach((doc) => {
-            const { title, status } = doc.data();
-            todos.push({
-              id: doc.id,
-              title,
-              status,
-            });
-          });
+          const todos = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
           setTodos(todos);
         },
         (error) => {
@@ -118,6 +114,7 @@ const Todo = () => {
         createdAt: serverTimestamp(),
         status: "unfinished",
         proof: null,
+        dueAt: toYYYYMMDD(new Date()),
       };
       const [error] = await to(addDoc(todosRef, data));
       if (error) {

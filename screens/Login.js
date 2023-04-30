@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 20,
     alignSelf: "center",
-    alignItems: "left",
+    alignItems: "flex-start",
     textAlign: "left",
     justifyContent: "center",
     color: "black",
