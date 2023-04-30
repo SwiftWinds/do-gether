@@ -8,7 +8,7 @@ import {
   FlatList,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
 import Calendar from "react-native-calendars/src/calendar";
 
@@ -101,6 +101,8 @@ const styles = StyleSheet.create({
     paddingLeft: 25,
     fontSize: 23,
     flex: 1,
+    fontWeight: "normal",
+    fontFamily: "Gaegu",
   },
   addTaskContainer: {
     flexDirection: "row",

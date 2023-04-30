@@ -1,16 +1,15 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
+import * as Font from "expo-font";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Image,
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import * as Font from "expo-font";
 
 import InlineBtn from "../components/InlineBtn";
 import { auth } from "../config";
