@@ -1,6 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
 import to from "await-to-js";
-import * as Font from "expo-font";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -14,30 +13,6 @@ import {
 import InlineBtn from "../components/InlineBtn";
 import { auth } from "../config";
 import AppStyles from "../styles/AppStyles";
-
-const CustomText = (props) => {
-  const [fontLoaded, setFontLoaded] = useState(false);
-
-  useEffect(() => {
-    async function loadFont() {
-      await Font.loadAsync({
-        "custom-font": require("../assets/fonts/Gaegu-Regular.ttf"),
-      });
-
-      setFontLoaded(true);
-    }
-    loadFont();
-  }, []);
-  if (!fontLoaded) {
-    return <Text>Loading...</Text>;
-  }
-
-  return (
-    <Text style={{ ...props.style, fontFamily: "custom-font" }}>
-      {props.children}
-    </Text>
-  );
-};
 
 export default function Login({ route }) {
   const pawDog = require("../assets/pawDog.png");
@@ -96,7 +71,7 @@ export default function Login({ route }) {
 
   return (
     <View style={[styles.container]}>
-      <CustomText style={styles.title}>Dogether</CustomText>
+      <Text style={styles.title}>Dogether</Text>
       <View style={styles.roundedContainer}>
         <TextInput
           style={[styles.textInput]}
@@ -160,11 +135,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 20,
     marginBottom: 80,
+    fontFamily: "Gaegu",
     //flex: 1,
   },
   //text style for input aligned to left with color black with opacity 47%
   textInput: {
-    fontFamily: "custom-font",
+    fontFamily: "Gaegu",
     fontSize: 20,
     alignSelf: "center",
     alignItems: "flex-start",
