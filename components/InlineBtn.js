@@ -5,7 +5,13 @@ export default function InlineBtn({ onPress, children }) {
   return (
     <Pressable onPress={onPress}>
       {({ pressed }) => (
-        <Text style={[pressed && AppStyles.pressedInlineBtn, AppStyles.inlineBtn]}>
+        <Text
+          style={[
+            pressed && AppStyles.pressedInlineBtn,
+            AppStyles.inlineBtn,
+            { fontFamily: "Gaegu" },
+          ]}
+        >
           {children}
         </Text>
       )}

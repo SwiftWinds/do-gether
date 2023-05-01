@@ -102,8 +102,8 @@ export default function Login({ route }) {
         <InlineBtn onPress={() => navigation.navigate("ResetPassword")}>
           <Text
             style={[
-              { color: "#A58263", fontFamily: "Gaegu" },
-              AppStyles.lightText,
+              { color: "#A58263", fontFamily: "Gaegu-Bold", fontSize: 20 },
+              AppStyles.darkText,
             ]}
           >
             Forgot password?
@@ -121,9 +121,31 @@ export default function Login({ route }) {
         <Text style={[AppStyles.lightText, AppStyles.loginBtnText]}>Login</Text>
       </TouchableOpacity>
       <View style={AppStyles.rowContainer}>
-        <Text style={AppStyles.lightText}>Don't have an account yet? </Text>
+        <Text
+          style={
+            (AppStyles.darkText,
+            {
+              fontFamily: "Gaegu-Bold",
+              fontSize: 20,
+              marginRight: 5,
+              color: "#A58263",
+              letterSpacing: -2,
+            })
+          }
+        >
+          Don't have an account?
+        </Text>
         <InlineBtn onPress={() => navigation.navigate("Signup")}>
-          Sign up
+          <Text
+            style={{
+              fontSize: 20,
+              color: "#815226",
+              fontFamily: "Gaegu-Bold",
+              letterSpacing: -2,
+            }}
+          >
+            Sign up
+          </Text>
         </InlineBtn>
       </View>
     </View>
@@ -153,10 +175,13 @@ const styles = StyleSheet.create({
   },
   forgotPass: {
     alignSelf: "flex-end",
+    fontFamily: "Gaegu-Bold",
+    marginTop: 8,
+    marginBottom: 20,
+    marginRight: 25,
     fontSize: 20,
     textAlign: "right",
     color: "black",
-    opacity: 0.47,
   },
   roundedContainer: {
     paddingLeft: 30,
@@ -182,7 +207,7 @@ const styles = StyleSheet.create({
 
   container: {
     backgroundColor: "#FFE4D3",
-    paddingTop: 100,
+    paddingTop: 150,
     padding: 15,
     borderRadius: 15,
     alignItems: "center",

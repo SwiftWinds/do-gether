@@ -21,6 +21,7 @@ const Stack = createStackNavigator();
 export default function App() {
   const [fontsLoaded] = useFonts({
     Gaegu: require("./assets/fonts/Gaegu-Regular.ttf"),
+    "Gaegu-Bold": require("./assets/fonts/Gaegu-Bold.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {

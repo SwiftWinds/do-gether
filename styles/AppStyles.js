@@ -30,7 +30,11 @@ export default StyleSheet.create({
     padding: 16,
   },
   lightText: {
+    fontFamily: "Gaegu",
     color: "#fff",
+  },
+  darkText: {
+    color: "#815226",
   },
   errorText: {
     color: "#f00",
@@ -69,6 +73,8 @@ export default StyleSheet.create({
     marginVertical: 9,
   },
   loginBtnText: {
-    textTransform: "uppercase",
+    color: "#ffe4d3",
+    fontFamily: "Gaegu",
+    fontSize: 35,
   },
 });
