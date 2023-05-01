@@ -73,7 +73,7 @@ export default StyleSheet.create({
     marginVertical: 9,
   },
   loginBtnText: {
-    color: "#ffe4d3",
+    color: "#fff",
     fontFamily: "Gaegu",
     fontSize: 35,
   },

@@ -4,7 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
-import { View } from "react-native";
+import { Text } from "react-native";
 
 import Detail from "./screens/Detail";
 import Home from "./screens/Home";
@@ -24,14 +24,11 @@ export default function App() {
     "Gaegu-Bold": require("./assets/fonts/Gaegu-Bold.ttf"),
   });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+    if (!fontsLoaded) {
+      return <Text>Loading...</Text>;
     }
-  }, [fontsLoaded]);
 
   return (
-    <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
       <ActionSheetProvider>
         <NavigationContainer
           linking={{
@@ -87,6 +84,5 @@ export default function App() {
           </Stack.Navigator>
         </NavigationContainer>
       </ActionSheetProvider>
-    </View>
   );
 }
