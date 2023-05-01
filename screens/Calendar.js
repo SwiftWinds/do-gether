@@ -10,10 +10,55 @@ import {
   TextInput,
   View,
 } from "react-native";
-import Calendar from "react-native-calendars/src/calendar";
 
+// import { LocaleConfig } from "react-native-calendars";
 import { auth, db } from "../config";
 import toYYYYMMDD from "../utils/date";
+import AppStyles from "../styles/AppStyles";
+import { LocaleConfig, Calendar } from "react-native-calendars";
+
+LocaleConfig.locales["en"] = {
+  monthNames: [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ],
+  monthNamesShort: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Agu",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+  dayNames: [
+    "Dimanche",
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi",
+  ],
+  dayNamesShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+  today: "Aujourd'hui",
+};
+LocaleConfig.defaultLocale = "en";
 
 const TaskCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(toYYYYMMDD(new Date()));
@@ -54,19 +99,26 @@ const TaskCalendar = () => {
   }, [user]);
 
   return (
-    // <View>
-    //   <Modal visible animationType="fade">
     <SafeAreaView style={styles.container}>
       <Calendar
-        style={{ borderRadius: 10, elevation: 4 }}
+        style={{ borderRadius: 40, elevation: 4 }}
         current={selectedDate}
         onDayPress={(day) => {
           setSelectedDate(day.dateString);
         }}
+        monthFormat={'MMMM'}
+        hideArrows={true}
+        disableArrowLeft={true}
+        disableArrowRight={true}
+        hideExtraDays={true}
+        enableSwipeMonths={true}
+        theme={{
+          backgroundColor: "#FFF3EE",
+        }}
         markedDates={{
           [selectedDate]: {
             selected: true,
-            selectedColor: "#2E66E7",
+            selectedColor: "#A58263",
           },
         }}
       />
@@ -80,17 +132,16 @@ const TaskCalendar = () => {
         <FAB icon={{ name: "add", color: "white" }} color="green" />
       </View>
     </SafeAreaView>
-    //   </Modal>
-    // </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#FFF3EE",
     flex: 1,
-    marginTop: 80,
-    marginLeft: 30,
-    marginRight: 30,
+    // marginTop: 80,
+    // marginLeft: 30,
+    // marginRight: 30,
   },
   input: {
     backgroundColor: "#D2BAA6",
