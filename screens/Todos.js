@@ -33,6 +33,7 @@ import {
   TouchableOpacity,
   Keyboard,
   Pressable,
+  image,
 } from "react-native";
 
 import { db, auth, storage } from "../config";
@@ -40,6 +41,19 @@ import alert from "../utils/alert";
 import toYYYYMMDD from "../utils/date";
 
 const Todo = () => {
+  const pawDog = require("../assets/pawDog.png");
+  const pawupDog = require("../assets/pawupDog.png");
+  const redPinkStack = require("../assets/redPink_stack.png");
+  const redPinkPostit = require("../assets/redPink_postit.png");
+  const redPostit = require("../assets/red_postit.png");
+  const orangePostit = require("../assets/orange_postit.png");
+  const yellowPostit = require("../assets/yellow_postit.png");
+  const greenPostit = require("../assets/green_postit.png");
+  const bluePostit = require("../assets/blue_postit.png");
+  const purplePostit = require("../assets/purple_postit.png");
+  const pinkPostit = require("../assets/pink_postit.png");
+  const brownPostit = require("../assets/brown_postit.png");
+  const fireplaceBackground = require("../assets/fireplaceBackground.png");
   const [user, setUser] = useState(null);
   const [todos, setTodos] = useState([]);
   const [addData, setAddData] = useState("");
