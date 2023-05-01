@@ -20,8 +20,8 @@ import {
   TouchableOpacity,
   FlatList,
   Pressable,
+  Button,
 } from "react-native";
-import { Button } from "react-native-web";
 
 import { auth, db } from "../config";
 
