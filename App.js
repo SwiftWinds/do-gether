@@ -2,8 +2,6 @@ import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
-import { useCallback } from "react";
 import { Text } from "react-native";
 
 import Detail from "./screens/Detail";
@@ -24,65 +22,65 @@ export default function App() {
     "Gaegu-Bold": require("./assets/fonts/Gaegu-Bold.ttf"),
   });
 
-    if (!fontsLoaded) {
-      return <Text>Loading...</Text>;
-    }
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
-      <ActionSheetProvider>
-        <NavigationContainer
-          linking={{
-            prefixes: ["https://dogether.tech", "dogether://"],
-            config: {
-              screens: {
-                Home: {
-                  screens: {
-                    Todos: "todos",
-                    Partner: "partner",
-                    Settings: "settings",
-                  },
+    <ActionSheetProvider>
+      <NavigationContainer
+        linking={{
+          prefixes: ["https://dogether.tech", "dogether://"],
+          config: {
+            screens: {
+              Home: {
+                screens: {
+                  Todos: "todos",
+                  Partner: "partner",
+                  Settings: "settings",
                 },
-                Detail: {
-                  path: "detail/:item",
-                  stringify: {
-                    item: (item) => item.id,
-                  },
-                  parse: {
-                    item: (item) => ({ id: item }),
-                  },
-                },
-                User: {
-                  path: "user/:uid",
-                  parse: {
-                    uid: (uid) => uid,
-                  },
-                },
-                Login: {
-                  path: "login",
-                  stringify: {
-                    redirectTo: () => undefined,
-                  },
-                  parse: {
-                    redirectTo: (redirectTo) => ({ uid: redirectTo }),
-                  },
-                },
-                Signup: "signup",
-                VerifyEmail: "verify-email",
-                ResetPassword: "reset-password",
               },
+              Detail: {
+                path: "detail/:item",
+                stringify: {
+                  item: (item) => item.id,
+                },
+                parse: {
+                  item: (item) => ({ id: item }),
+                },
+              },
+              User: {
+                path: "user/:uid",
+                parse: {
+                  uid: (uid) => uid,
+                },
+              },
+              Login: {
+                path: "login",
+                stringify: {
+                  redirectTo: () => undefined,
+                },
+                parse: {
+                  redirectTo: (redirectTo) => ({ uid: redirectTo }),
+                },
+              },
+              Signup: "signup",
+              VerifyEmail: "verify-email",
+              ResetPassword: "reset-password",
             },
-          }}
-        >
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Detail" component={Detail} />
-            <Stack.Screen name="User" component={User} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Signup" component={Signup} />
-            <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
-            <Stack.Screen name="ResetPassword" component={ResetPassword} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </ActionSheetProvider>
+          },
+        }}
+      >
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Detail" component={Detail} />
+          <Stack.Screen name="User" component={User} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Signup" component={Signup} />
+          <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
+          <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ActionSheetProvider>
   );
 }

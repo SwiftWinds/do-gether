@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 
 import InlineBtn from "../components/InlineBtn";
@@ -72,6 +73,10 @@ export default function Login({ route }) {
   return (
     <View style={[styles.container]}>
       <Text style={styles.title}>Dogether</Text>
+      {/* Add a dog image such that the dog is positioned exactly above the email input placeholder text and the dog's paws are overflowing into the email input */}
+      <View style={styles.imageContainer}>
+        <Image source={pawDog} style={styles.pawDog} />
+      </View>
       <View style={styles.roundedContainer}>
         <TextInput
           style={[styles.textInput]}
@@ -195,6 +200,7 @@ const styles = StyleSheet.create({
   },
 
   roundedBtn: {
+    marginTop: 20,
     margin: 10,
     borderRadius: 40,
     backgroundColor: "#A58263",
@@ -207,7 +213,7 @@ const styles = StyleSheet.create({
 
   container: {
     backgroundColor: "#FFE4D3",
-    paddingTop: 150,
+    paddingTop: 175,
     padding: 15,
     borderRadius: 15,
     alignItems: "center",
@@ -278,5 +284,20 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     textAlign: "center",
+  },
+  imageContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+  },
+  pawDog: {
+    width: 200,
+    height: 200,
+    resizeMode: "contain",
   },
 });
