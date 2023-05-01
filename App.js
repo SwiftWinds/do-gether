@@ -16,7 +16,7 @@ import VerifyEmail from "./screens/VerifyEmail";
 
 const Stack = createStackNavigator();
 
-SplashScreen.preventAutoHideAsync();
+//SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded] = useFonts({

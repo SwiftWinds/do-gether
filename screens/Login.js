@@ -76,10 +76,8 @@ export default function Login({ route }) {
         <TextInput
           style={[styles.textInput]}
           autoCapitalize="none"
-          //make placeholder text with customText
-
-          //placeholder="Email"
-          placeholderTextColor="#bebebe"
+          placeholder="Email"
+          placeholderTextColor="#000000"
           returnKeyType="next"
           keyboardType="email-address"
           onChangeText={setEmail}
@@ -91,7 +89,7 @@ export default function Login({ route }) {
         <TextInput
           style={[styles.textInput]}
           placeholder="Password"
-          placeholderTextColor="#DCDCDC"
+          placeholderTextColor="#000000"
           returnKeyType="go"
           secureTextEntry
           onChangeText={setPassword}
@@ -100,9 +98,16 @@ export default function Login({ route }) {
           ref={passwordInputRef}
         />
       </View>
-      <View style={AppStyles.rowContainer}>
+      <View style={styles.forgotPass}>
         <InlineBtn onPress={() => navigation.navigate("ResetPassword")}>
-          Forgot password?
+          <Text
+            style={[
+              { color: "#A58263", fontFamily: "Gaegu" },
+              AppStyles.lightText,
+            ]}
+          >
+            Forgot password?
+          </Text>
         </InlineBtn>
       </View>
       <View>
@@ -141,20 +146,23 @@ const styles = StyleSheet.create({
   //text style for input aligned to left with color black with opacity 47%
   textInput: {
     fontFamily: "Gaegu",
-    fontSize: 20,
-    alignSelf: "center",
-    alignItems: "flex-start",
+    fontSize: 24,
     textAlign: "left",
-    justifyContent: "center",
+    color: "black",
+    opacity: 0.47,
+  },
+  forgotPass: {
+    alignSelf: "flex-end",
+    fontSize: 20,
+    textAlign: "right",
     color: "black",
     opacity: 0.47,
   },
   roundedContainer: {
+    paddingLeft: 30,
     margin: 10,
     borderRadius: 40,
     backgroundColor: "#FFF3EE",
-    alignItems: "center",
-    justifyContent: "center",
     flexDirection: "row",
     height: "9%",
     width: "90%",
@@ -178,7 +186,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 15,
     alignItems: "center",
-    //justifyContent: "center",
     flexDirection: "column",
     height: "100%",
   },
