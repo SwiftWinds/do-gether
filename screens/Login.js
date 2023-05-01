@@ -287,17 +287,16 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
+    top: 255,
+    left: 50,
+    zIndex: 1,
   },
   pawDog: {
-    width: 200,
-    height: 200,
+    width: 100,
+    height: 100,
     resizeMode: "contain",
   },
 });
