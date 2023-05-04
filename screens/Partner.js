@@ -21,13 +21,40 @@ import {
   FlatList,
   Pressable,
   Button,
+  Image,
+  style,
+  ImageBackground,
 } from "react-native";
-
 import { auth, db } from "../config";
 
 const WEB_API_KEY = "AIzaSyCJ2FY69u3jR8WMVLCT_TDrkKyqkUE2Y3k";
 
+
 const Partner = () => {
+  const [visible, setIsVisible] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
+  const redPinkPicker = require("../assets/redPink_picker.png");
+  const redPicker = require("../assets/red_picker.png");
+  const orangePicker = require("../assets/orange_picker.png");
+  const yellowPicker = require("../assets/yellow_picker.png");
+  const greenPicker = require("../assets/green_picker.png");
+  const bluePicker = require("../assets/blue_picker.png");
+  const purplePicker = require("../assets/purple_picker.png");
+  const pinkPickert = require("../assets/pink_picker.png");
+  const brownPicker = require("../assets/brown_picker.png");
+  const bulletin = require("../assets/bullentinBoard.png");
+  
+const colors = new Map([
+  ["redPink", redPinkPicker],
+  ["red", redPicker],
+  ["orange", orangePicker],
+  ["yellow", yellowPicker],
+  ["green", greenPicker],
+  ["blue", bluePicker],
+  ["purple", purplePicker],
+  ["pink", pinkPicker],
+  ["brown", brownPicker],
+]);
   const [user, setUser] = useState(null);
   const [hasPartner, setHasPartner] = useState(false);
   const [partnerUid, setPartnerUid] = useState(null);
@@ -45,9 +72,7 @@ const Partner = () => {
     });
     return images;
   }, [todos]);
-  const [visible, setIsVisible] = useState(false);
-  const [imageIndex, setImageIndex] = useState(0);
-
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("user:", user);
@@ -165,85 +190,101 @@ const Partner = () => {
     setIsVisible(true);
     console.log("viewing image: ", images[index]);
   };
-
-  if (hasPartner) {
-    return (
-      <>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Partner</Text>
-          </View>
-          <View style={styles.innerContainer}>
-            <FlatList
-              data={todos}
-              numColumns={1}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <Pressable
-                  onPress={() => {
-                    if (item.status === "finished") {
-                      showImage(item);
-                    }
-                  }}
-                  style={styles.innerContainer}
-                >
-                  <Ionicons
-                    name={
-                      {
-                        unfinished: "md-square-outline",
-                        finished: "md-alert-circle-outline",
-                        verified: "md-checkmark-circle-outline",
-                      }[item.status]
-                    }
-                    size={24}
-                    color="black"
-                    style={styles.todoIcon}
-                  />
-                  <View style={styles.innerContainer}>
-                    <Text style={styles.itemHeading}>
-                      {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
-                    </Text>
-                  </View>
-                </Pressable>
-              )}
+  if(hasPartner){
+    return(
+      <View style={styles.container}>
+        <ImageBackground source={bulletin} style={styles.bulletin}>
+          <View style={styles.boardContainer}>
+            {todos.map((item) => {
+              return <ImageBackground
+              source={colors.get(item.color)}
+              style={styles.postit}
             />
+            })}
           </View>
-          <Button title="Leave partnership" onPress={leavePartnership} />
-        </View>
-        <ImageView
-          images={images}
-          imageIndex={imageIndex}
-          visible={visible}
-          onRequestClose={() => setIsVisible(false)}
-          // footer has verify proof button
-          FooterComponent={({ imageIndex }) => (
-            <View style={styles.footerContainer}>
-              <TouchableOpacity
-                style={styles.footerButton}
-                onPress={() => {
-                  updateDoc(
-                    doc(
-                      db,
-                      `users/${partnerUid}/todos/${images[imageIndex].id}`
-                    ),
-                    {
-                      status: "verified",
-                    }
-                  );
-                  // close modal if no more images, else show next image
-                  if (imageIndex === images.length - 1) {
-                    setIsVisible(false);
-                  }
-                }}
-              >
-                <Text style={styles.footerText}>Verify proof</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-      </>
+        </ImageBackground>
+      </View>
     );
   }
+
+  // if (hasPartner) {
+  //   return (
+  //     <>
+  //       <View style={styles.container}>
+  //         <View style={styles.header}>
+  //           <Text style={styles.title}>Partner</Text>
+  //         </View>
+  //         <View style={styles.innerContainer}>
+  //           <FlatList
+  //             data={todos}
+  //             numColumns={1}
+  //             keyExtractor={(item) => item.id}
+  //             renderItem={({ item }) => (
+  //               <Pressable
+  //                 onPress={() => {
+  //                   if (item.status === "finished") {
+  //                     showImage(item);
+  //                   }
+  //                 }}
+  //                 style={styles.innerContainer}
+  //               >
+  //                 <Ionicons
+  //                   name={
+  //                     {
+  //                       unfinished: "md-square-outline",
+  //                       finished: "md-alert-circle-outline",
+  //                       verified: "md-checkmark-circle-outline",
+  //                     }[item.status]
+  //                   }
+  //                   size={24}
+  //                   color="black"
+  //                   style={styles.todoIcon}
+  //                 />
+  //                 <View style={styles.innerContainer}>
+  //                   <Text style={styles.itemHeading}>
+  //                     {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
+  //                   </Text>
+  //                 </View>
+  //               </Pressable>
+  //             )}
+  //           />
+  //         </View>
+  //         <Button title="Leave partnership" onPress={leavePartnership} />
+  //       </View>
+  //       <ImageView
+  //         images={images}
+  //         imageIndex={imageIndex}
+  //         visible={visible}
+  //         onRequestClose={() => setIsVisible(false)}
+  //         // footer has verify proof button
+  //         FooterComponent={({ imageIndex }) => (
+  //           <View style={styles.footerContainer}>
+  //             <TouchableOpacity
+  //               style={styles.footerButton}
+  //               onPress={() => {
+  //                 updateDoc(
+  //                   doc(
+  //                     db,
+  //                     `users/${partnerUid}/todos/${images[imageIndex].id}`
+  //                   ),
+  //                   {
+  //                     status: "verified",
+  //                   }
+  //                 );
+  //                 // close modal if no more images, else show next image
+  //                 if (imageIndex === images.length - 1) {
+  //                   setIsVisible(false);
+  //                 }
+  //               }}
+  //             >
+  //               <Text style={styles.footerText}>Verify proof</Text>
+  //             </TouchableOpacity>
+  //           </View>
+  //         )}
+  //       />
+  //     </>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -267,14 +308,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    backgroundColor: "e5e5e5",
-    paddingTop: 30,
-    padding: 15,
-    borderRadius: 15,
-    margin: 5,
-    marginHorizontal: 10,
+    backgroundColor: "#FFE4D3",
+    paddingTop: 50,
     alignItems: "center",
-    justifyContent: "center",
     flexDirection: "column",
     height: "100%",
   },
@@ -304,6 +340,25 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     flex: 1,
     marginRight: 5,
+  },
+  bulletin:{
+    height:625,
+    width:625,
+  },
+
+  boardContainer:{
+    marginHorizontal: "auto",
+    width: 400,
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  postit:{
+    flex: 1,
+    minWidth: 100,
+    marginxWidth: 100,
+    height: 100,
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
     height: 47,

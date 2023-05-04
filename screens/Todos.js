@@ -46,7 +46,7 @@ import toYYYYMMDD from "../utils/date";
 const Todo = () => {
   const pawDog = require("../assets/pawDog.png");
   const pawupDog = require("../assets/pawupDog.png");
-  const fire = require("../assets/fire.png")
+  const fire = require("../assets/fire.png");
   const redPinkStack = require("../assets/redPink_stack.png");
   const redPinkPostit = require("../assets/redPink_postit.png");
   const redPostit = require("../assets/red_postit.png");
@@ -75,13 +75,13 @@ const Todo = () => {
   ]);
   const fireLoc = new Map([
     [0, 0],
-    [1, [1,2]],
+    [1, [1, 2]],
     [2, orangePostit],
     [3, yellowPostit],
-    [4, [80,220]],
-    [5, [74,220]],
-    [6, [69,220]],
-    [7, [65,220]],
+    [4, [80, 220]],
+    [5, [74, 220]],
+    [6, [69, 220]],
+    [7, [65, 220]],
   ]);
   const navigation = useNavigation();
 
@@ -316,20 +316,35 @@ const Todo = () => {
         resizeMode="cover"
         style={styles.fullBackground}
       >
-        <Image source={pawDog} style={styles.dogImage}/>
-        <ImageBackground
-          source={redPinkStack}
-          style={styles.postitImage}
-        >
-          <ImageBackground source={colors.get(todos?.[0]?.color)} style={styles.postit1}>
+        <Image source={pawDog} style={styles.dogImage} />
+        <ImageBackground source={redPinkStack} style={styles.postitImage}>
+          <ImageBackground
+            source={colors.get(todos?.[0]?.color)}
+            style={styles.postit1}
+          >
             <Text style={styles.tasksText}>{todos?.[0]?.title}</Text>
           </ImageBackground>
-          <ImageBackground source={colors.get(todos?.[1]?.color)} style={styles.postit2}>
+          <ImageBackground
+            source={colors.get(todos?.[1]?.color)}
+            style={styles.postit2}
+          >
             <Text style={styles.tasksText}>{todos?.[1]?.title}</Text>
           </ImageBackground>
         </ImageBackground>
-        <View style={[styles.fireContainer,{bottom:(streak < 8) ? 105 - (streak * 5): 95}]}>
-          <Image source={fire} style={[styles.fireImage, {width: (streak < 8) ? streak*22 : 154 }, {height: (streak < 8) ? streak * 22 : 154 }]}/>
+        <View
+          style={[
+            styles.fireContainer,
+            { bottom: streak < 8 ? 105 - streak * 5 : 70 },
+          ]}
+        >
+          <Image
+            source={fire}
+            style={[
+              styles.fireImage,
+              { width: streak < 8 ? streak * 21 : 147 },
+              { height: streak < 8 ? streak * 21 : 147 },
+            ]}
+          />
         </View>
         <Text style={styles.streaksText}> Streaks: {streak}</Text>
       </ImageBackground>
@@ -438,7 +453,7 @@ const styles = StyleSheet.create({
     marginTop: -85,
     zIndex: 0,
   },
-  postit1:{
+  postit1: {
     width: 400,
     height: 400,
     alignSelf: "center",
@@ -446,7 +461,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     zIndex: 2,
   },
-  postit2:{
+  postit2: {
     width: 400,
     height: 400,
     alignSelf: "center",
@@ -469,15 +484,15 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     zIndex: 3,
   },
-  fireContainer:{
+  fireContainer: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-end",
-    alignItems:"center",
-    width:154,
+    alignItems: "center",
+    width: 154,
     height: 154,
-    position: 'absolute',
-    bottom:80,
+    position: "absolute",
+    bottom: 80,
     left: 215,
     resizeMode: "contain",
   },
@@ -522,7 +537,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     textAlign: "left",
     color: "black",
-    position: 'absolute',
+    position: "absolute",
     bottom: 5,
   },
   input: {
