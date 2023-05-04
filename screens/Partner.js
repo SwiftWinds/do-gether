@@ -40,7 +40,7 @@ const Partner = () => {
   const greenPicker = require("../assets/green_picker.png");
   const bluePicker = require("../assets/blue_picker.png");
   const purplePicker = require("../assets/purple_picker.png");
-  const pinkPickert = require("../assets/pink_picker.png");
+  const pinkPicker = require("../assets/pink_picker.png");
   const brownPicker = require("../assets/brown_picker.png");
   const bulletin = require("../assets/bullentinBoard.png");
   
@@ -194,15 +194,15 @@ const colors = new Map([
     return(
       <View style={styles.container}>
         <ImageBackground source={bulletin} style={styles.bulletin}>
-          <View style={styles.boardContainer}>
+        </ImageBackground>
+        <View style={styles.boardContainer}>
             {todos.map((item) => {
-              return <ImageBackground
+              return <Image
               source={colors.get(item.color)}
               style={styles.postit}
             />
             })}
           </View>
-        </ImageBackground>
       </View>
     );
   }
@@ -344,6 +344,7 @@ const styles = StyleSheet.create({
   bulletin:{
     height:625,
     width:625,
+    zIndex: 0,
   },
 
   boardContainer:{
@@ -354,11 +355,12 @@ const styles = StyleSheet.create({
   },
   postit:{
     flex: 1,
-    minWidth: 100,
+    minWidth: 50,
     marginxWidth: 100,
-    height: 100,
+    height: 50,
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 1,
   },
   button: {
     height: 47,
