@@ -10,11 +10,13 @@ import {
   doc,
   onSnapshot,
   query,
+  where,
   orderBy,
   addDoc,
   deleteDoc,
   updateDoc,
   serverTimestamp,
+  querySnapshot,
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import React, {
@@ -59,7 +61,17 @@ const Todo = () => {
   const [todos, setTodos] = useState([]);
   const [addData, setAddData] = useState("");
   const [streak, setStreak] = useState(0);
-
+  const colors = new Map([
+    ["redPink", redPinkPostit],
+    ["red", redPostit],
+    ["orange", orangePostit],
+    ["yellow", yellowPostit],
+    ["green", greenPostit],
+    ["blue", bluePostit],
+    ["purple", purplePostit],
+    ["pink", pinkPostit],
+    ["brown", brownPostit],
+  ]);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -102,7 +114,7 @@ const Todo = () => {
 
     if (todosRef) {
       unsubTodos = onSnapshot(
-        query(todosRef, orderBy("createdAt", "desc")),
+        query(todosRef, where("status", "==", "unfinished"), orderBy("index")),
         (querySnapshot) => {
           const todos = querySnapshot.docs.map((doc) => ({
             id: doc.id,
@@ -288,14 +300,27 @@ const Todo = () => {
 
   return (
     <View style={styles.fullBackground}>
-    <ImageBackground source={fireplaceBackground} resizeMode="cover" style={styles.fullBackground}>
-      <Image source={pawDog} style={styles.dogImage}></Image>
-      <Image source={redPinkStack} style={styles.postitImage}></Image>
-    </ImageBackground>
-    
-  </View>
-  
-    
+      <ImageBackground
+        source={fireplaceBackground}
+        resizeMode="cover"
+        style={styles.fullBackground}
+      >
+        <Image source={pawDog} style={styles.dogImage}/>
+        <ImageBackground
+          source={redPinkStack}
+          style={styles.postitImage}
+        >
+          <ImageBackground source={colors.get(todos?.[0]?.color)} style={styles.postit1}>
+            <Text style={styles.tasksText}>{todos?.[0]?.title}</Text>
+          </ImageBackground>
+          <ImageBackground source={colors.get(todos?.[1]?.color)} style={styles.postit2}>
+            <Text style={styles.tasksText}>{todos?.[1]?.title}</Text>
+          </ImageBackground>
+        </ImageBackground>
+        <Image source={} style={styles.dogImage}/>
+      </ImageBackground>
+    </View>
+
     // <View style={{ flex: 1 }}>
     //   <View style={styles.formContainer}>
     //     <TextInput
@@ -388,24 +413,41 @@ const styles = StyleSheet.create({
     right: 30,
     alignSelf: "center",
   },
-  fullBackground:{
+  fullBackground: {
     flex: 1,
   },
-  postitImage:{
+  postitImage: {
     width: 400,
     height: 400,
     alignSelf: "center",
     marginRight: 20,
-    marginTop:-85,
-    zIndex:0,
+    marginTop: -85,
+    zIndex: 0,
   },
-  dogImage:{
-    marginTop:30,
-    width:120,
-    height:120,
+  postit1:{
+    width: 400,
+    height: 400,
+    alignSelf: "center",
+    marginRight: 20,
+    marginLeft: 15,
+    zIndex: 2,
+  },
+  postit2:{
+    width: 400,
+    height: 400,
+    alignSelf: "center",
+    marginRight: 20,
+    marginLeft: 15,
+    zIndex: 1,
+    marginTop: -400,
+  },
+  dogImage: {
+    marginTop: 50,
+    width: 120,
+    height: 120,
     alignSelf: "center",
     resizeMode: "contain",
-    zIndex:1,
+    zIndex: 3,
   },
   container: {
     backgroundColor: "e5e5e5",
@@ -433,6 +475,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginTop: 100,
+  },
+  tasksText: {
+    fontFamily: "Gaegu",
+    fontSize: 30,
+    textAlign: "center",
+    color: "black",
+    marginLeft: 40,
+    marginTop: 170,
   },
   input: {
     height: 48,
