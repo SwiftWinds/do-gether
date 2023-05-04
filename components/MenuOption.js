@@ -2,7 +2,7 @@ import { Entypo, SimpleLineIcons, EvilIcons } from "@expo/vector-icons";
 import { Text } from "react-native";
 import { MenuOption } from "react-native-popup-menu";
 
-const CustomMenuOption = ({ text, iconName, onSelect }) => (
+const CustomMenuOption = ({ text, icon, iconName, onSelect }) => (
   <MenuOption
     onSelect={onSelect}
     customStyles={{
@@ -14,7 +14,7 @@ const CustomMenuOption = ({ text, iconName, onSelect }) => (
     }}
   >
     <Text>{text}</Text>
-    <Entypo name={iconName} size={24} color="black" />
+    {icon ? icon : <Entypo name={iconName} size={24} color="black" />}
   </MenuOption>
 );
 

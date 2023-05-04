@@ -26,7 +26,13 @@ import {
   Keyboard,
 } from "react-native";
 import { LocaleConfig, Calendar } from "react-native-calendars";
-import { MenuProvider } from "react-native-popup-menu";
+import {
+  MenuProvider,
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
 
 import TodoItem from "../components/TodoItem";
 import { auth, db } from "../config";
@@ -147,6 +153,7 @@ const TaskCalendar = () => {
         proof: null,
         dueAt: toYYYYMMDD(new Date()),
         index: todos.length,
+        color: "redPink",
       };
       const [error] = await to(addDoc(todosRef, data));
       if (error) {
@@ -187,13 +194,11 @@ const TaskCalendar = () => {
           },
         }}
       />
-      <MenuProvider style={styles.container}>
-        <FlatList
-          data={todos}
-          renderItem={({ item }) => <TodoItem todo={item} />}
-          keyExtractor={(item) => item.id}
-        />
-      </MenuProvider>
+      <FlatList
+        data={todos}
+        renderItem={({ item }) => <TodoItem todo={item} />}
+        keyExtractor={(item) => item.id}
+      />
       <View style={styles.addTaskContainer}>
         <TextInput
           value={todoTitle}
@@ -216,6 +221,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFF3EE",
     flex: 1,
+    marginTop: 20,
   },
   input: {
     backgroundColor: "#D2BAA6",
