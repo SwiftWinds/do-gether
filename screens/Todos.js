@@ -33,7 +33,8 @@ import {
   TouchableOpacity,
   Keyboard,
   Pressable,
-  image,
+  Image,
+  ImageBackground,
 } from "react-native";
 
 import { db, auth, storage } from "../config";
@@ -286,82 +287,91 @@ const Todo = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.formContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Add a new todo"
-          placeholderTextColor="#aaaaaa"
-          onChangeText={(text) => setAddData(text)}
-          value={addData}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
-          onSubmitEditing={addTodo}
-        />
-        <TouchableOpacity style={styles.button} onPress={addTodo}>
-          <Text style={styles.buttonText}>Add</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={todos}
-        numColumns={1}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.container}>
-            <Ionicons
-              name={
-                {
-                  unfinished: "md-square-outline",
-                  finished: "md-hourglass-outline",
-                  verified: "md-checkmark-circle-outline",
-                }[item.status]
-              }
-              size={24}
-              color="black"
-              onPress={() => {
-                if (item.status === "unfinished") {
-                  askForImage(item);
-                } else {
-                  toggleTodo(item);
-                }
-              }}
-              style={styles.todoIcon}
-            />
-            <Pressable
-              style={styles.innerContainer}
-              onPress={() => navigation.navigate("Detail", { item })}
-            >
-              <Text style={styles.itemHeading}>
-                {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
-              </Text>
-            </Pressable>
-            <FontAwesome
-              name="trash-o"
-              size={24}
-              color="red"
-              onPress={() => deleteTodo(item)}
-              style={styles.deleteIcon}
-            />
-          </View>
-        )}
-      />
-      <Text style={styles.footerText}>Streak: {streak}</Text>
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={1}
-        snapPoints={snapPoints}
-        onChange={handleSheetChanges}
-      >
-        <View style={styles.contentContainer}>
-          <Text>Awesome 🎉</Text>
-        </View>
-      </BottomSheet>
-      {/* Facing issues, see: https://stackoverflow.com/questions/75300503/attempting-to-run-js-driven-animation-on-animated-node-that-has-been-moved-to-n */}
-      {/* <FAB
-        icon={(props) => <Icon name="plus" {...props} />}
-        style={styles.fab}
-      /> */}
-    </View>
+    <View style={styles.fullBackground}>
+    <ImageBackground source={fireplaceBackground} resizeMode="cover" style={styles.fullBackground}>
+      <Image source={pawDog} style={styles.dogImage}></Image>
+      <Image source={redPinkStack} style={styles.postitImage}></Image>
+    </ImageBackground>
+    
+  </View>
+  
+    
+    // <View style={{ flex: 1 }}>
+    //   <View style={styles.formContainer}>
+    //     <TextInput
+    //       style={styles.input}
+    //       placeholder="Add a new todo"
+    //       placeholderTextColor="#aaaaaa"
+    //       onChangeText={(text) => setAddData(text)}
+    //       value={addData}
+    //       underlineColorAndroid="transparent"
+    //       autoCapitalize="none"
+    //       onSubmitEditing={addTodo}
+    //     />
+    //     <TouchableOpacity style={styles.button} onPress={addTodo}>
+    //       <Text style={styles.buttonText}>Add</Text>
+    //     </TouchableOpacity>
+    //   </View>
+    //   <FlatList
+    //     data={todos}
+    //     numColumns={1}
+    //     keyExtractor={(item) => item.id}
+    //     renderItem={({ item }) => (
+    //       <View style={styles.container}>
+    //         <Ionicons
+    //           name={
+    //             {
+    //               unfinished: "md-square-outline",
+    //               finished: "md-hourglass-outline",
+    //               verified: "md-checkmark-circle-outline",
+    //             }[item.status]
+    //           }
+    //           size={24}
+    //           color="black"
+    //           onPress={() => {
+    //             if (item.status === "unfinished") {
+    //               askForImage(item);
+    //             } else {
+    //               toggleTodo(item);
+    //             }
+    //           }}
+    //           style={styles.todoIcon}
+    //         />
+    //         <Pressable
+    //           style={styles.innerContainer}
+    //           onPress={() => navigation.navigate("Detail", { item })}
+    //         >
+    //           <Text style={styles.itemHeading}>
+    //             {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
+    //           </Text>
+    //         </Pressable>
+    //         <FontAwesome
+    //           name="trash-o"
+    //           size={24}
+    //           color="red"
+    //           onPress={() => deleteTodo(item)}
+    //           style={styles.deleteIcon}
+    //         />
+    //       </View>
+    //     )}
+    //   />
+    //   <Text style={styles.footerText}>Streak: {streak}</Text>
+    //   <BottomSheet
+    //     ref={bottomSheetRef}
+    //     index={1}
+    //     snapPoints={snapPoints}
+    //     onChange={handleSheetChanges}
+    //   >
+    //     <View style={styles.contentContainer}>
+    //       <Text>Awesome 🎉</Text>
+    //     </View>
+    //   </BottomSheet>
+    //   {/* Facing issues, see: https://stackoverflow.com/questions/75300503/attempting-to-run-js-driven-animation-on-animated-node-that-has-been-moved-to-n */}
+    //   {/* <FAB
+    //     icon={(props) => <Icon name="plus" {...props} />}
+    //     style={styles.fab}
+    //   /> */}
+    // </View>
   );
 };
 
@@ -377,6 +387,25 @@ const styles = StyleSheet.create({
     bottom: 20,
     right: 30,
     alignSelf: "center",
+  },
+  fullBackground:{
+    flex: 1,
+  },
+  postitImage:{
+    width: 400,
+    height: 400,
+    alignSelf: "center",
+    marginRight: 20,
+    marginTop:-85,
+    zIndex:0,
+  },
+  dogImage:{
+    marginTop:30,
+    width:120,
+    height:120,
+    alignSelf: "center",
+    resizeMode: "contain",
+    zIndex:1,
   },
   container: {
     backgroundColor: "e5e5e5",
