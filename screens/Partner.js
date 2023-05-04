@@ -29,7 +29,6 @@ import { auth, db } from "../config";
 
 const WEB_API_KEY = "AIzaSyCJ2FY69u3jR8WMVLCT_TDrkKyqkUE2Y3k";
 
-
 const Partner = () => {
   const [visible, setIsVisible] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
@@ -43,18 +42,18 @@ const Partner = () => {
   const pinkPicker = require("../assets/pink_picker.png");
   const brownPicker = require("../assets/brown_picker.png");
   const bulletin = require("../assets/bullentinBoard.png");
-  
-const colors = new Map([
-  ["redPink", redPinkPicker],
-  ["red", redPicker],
-  ["orange", orangePicker],
-  ["yellow", yellowPicker],
-  ["green", greenPicker],
-  ["blue", bluePicker],
-  ["purple", purplePicker],
-  ["pink", pinkPicker],
-  ["brown", brownPicker],
-]);
+
+  const colors = new Map([
+    ["redPink", redPinkPicker],
+    ["red", redPicker],
+    ["orange", orangePicker],
+    ["yellow", yellowPicker],
+    ["green", greenPicker],
+    ["blue", bluePicker],
+    ["purple", purplePicker],
+    ["pink", pinkPicker],
+    ["brown", brownPicker],
+  ]);
   const [user, setUser] = useState(null);
   const [hasPartner, setHasPartner] = useState(false);
   const [partnerUid, setPartnerUid] = useState(null);
@@ -70,9 +69,10 @@ const colors = new Map([
         });
       }
     });
+    console.log("images", images);
     return images;
   }, [todos]);
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("user:", user);
@@ -103,19 +103,18 @@ const colors = new Map([
     }
 
     const unsubPartnerTodos = onSnapshot(
-      query(
-        collection(db, `users/${partnerUid}/todos`),
-        orderBy("createdAt", "desc")
-      ),
+      query(collection(db, `users/${partnerUid}/todos`), orderBy("index")),
       (querySnapshot) => {
+        console.log("partnerUid", partnerUid);
         const todos = [];
         querySnapshot.forEach((doc) => {
-          const { title, status, proof } = doc.data();
+          const { title, status, proof, color } = doc.data();
           todos.push({
             id: doc.id,
             title,
             status,
             proof,
+            color,
           });
         });
         setTodos(todos);
@@ -190,20 +189,91 @@ const colors = new Map([
     setIsVisible(true);
     console.log("viewing image: ", images[index]);
   };
-  if(hasPartner){
-    return(
-      <View style={styles.container}>
-        <ImageBackground source={bulletin} style={styles.bulletin}>
-        </ImageBackground>
-        <View style={styles.boardContainer}>
-            {todos.map((item) => {
-              return <Image
-              source={colors.get(item.color)}
-              style={styles.postit}
-            />
-            })}
-          </View>
-      </View>
+
+  const Item = ({ item }) => {
+    return <View style={styles.postit}>{item.color}</View>;
+  };
+  if (hasPartner) {
+    return (
+      <>
+        <View style={styles.container}>
+          <ImageBackground source={bulletin} style={styles.bulletin}>
+            <View style={styles.boardContainer}>
+              {todos.map((item) => {
+                console.log("item.color", item);
+                console.log("colors.get(item.color)", colors.get(item.color));
+                return (
+                  <View style={styles.postits}>
+                    <Pressable
+                      onPress={() => {
+                        if (item.status === "finished") {
+                          showImage(item);
+                        }
+                      }}
+                    >
+                      <ImageBackground
+                        source={colors.get(item.color)}
+                        style={styles.postitPic}
+                      >
+                        {item.status === "verified" ? (
+                          <View style={styles.checkMark}>
+                            <Ionicons
+                              name="checkmark-outline"
+                              size={40}
+                              color="#009936"
+                            ></Ionicons>
+                          </View>
+                        ) : null}
+                        {item.status === "finished" ? (
+                          <View style={styles.checkMark}>
+                            <Ionicons
+                              name="alert"
+                              size={40}
+                              color="#CF4C4F"
+                            ></Ionicons>
+                          </View>
+                        ) : null}
+                      </ImageBackground>
+                    </Pressable>
+                  </View>
+                );
+              })}
+            </View>
+          </ImageBackground>
+        </View>
+        <ImageView
+          images={images}
+          imageIndex={0}
+          visible={visible}
+          onRequestClose={() => setIsVisible(false)}
+          style={{ height: 100 }}
+          // footer has verify proof button
+          FooterComponent={({ imageIndex }) => (
+            <View style={styles.footerContainer}>
+              <TouchableOpacity
+                style={styles.footerButton}
+                onPress={() => {
+                  updateDoc(
+                    doc(
+                      db,
+                      `users/${partnerUid}/todos/${images[imageIndex].id}`
+                    ),
+                    {
+                      status: "verified",
+                    }
+                  );
+                  // close modal if no more images, else show next image
+                  if (imageIndex === images.length - 1) {
+                    setIsVisible(false);
+                  }
+                }}
+              >
+                <Text style={styles.footerText}>Verify proof</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      </>
     );
   }
 
@@ -341,26 +411,41 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 5,
   },
-  bulletin:{
-    height:625,
-    width:625,
+  bulletin: {
+    height: 625,
+    width: 625,
     zIndex: 0,
   },
-
-  boardContainer:{
+  checkMark: {
+    alignSelf: "center",
+    marginTop: 15,
+    width: 40,
+    height: 40,
+  },
+  boardContainer: {
     marginHorizontal: "auto",
-    width: 400,
+    width: 300,
     flexDirection: "row",
     flexWrap: "wrap",
+    alignSelf: "center",
+    marginLeft: 200,
+    marginRight: 200,
+    paddingTop: 130,
   },
-  postit:{
+  postits: {
     flex: 1,
-    minWidth: 50,
-    marginxWidth: 100,
-    height: 50,
+    minWidth: 80,
+    height: 60,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
+    paddingLeft: 25,
     zIndex: 1,
+    alignSelf: "flex-start",
+    marginBottom: 15,
+  },
+  postitPic: {
+    width: 60,
+    height: 60,
   },
   button: {
     height: 47,
@@ -374,11 +459,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     textAlign: "center",
-  },
-  todoIcon: {
-    marginTop: 5,
-    fontSize: 20,
-    //marginLeft: 14,
   },
   footerContainer: {
     flexDirection: "row",
