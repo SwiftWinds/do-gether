@@ -46,6 +46,7 @@ import toYYYYMMDD from "../utils/date";
 const Todo = () => {
   const pawDog = require("../assets/pawDog.png");
   const pawupDog = require("../assets/pawupDog.png");
+  const fire = require("../assets/fire.png")
   const redPinkStack = require("../assets/redPink_stack.png");
   const redPinkPostit = require("../assets/redPink_postit.png");
   const redPostit = require("../assets/red_postit.png");
@@ -71,6 +72,16 @@ const Todo = () => {
     ["purple", purplePostit],
     ["pink", pinkPostit],
     ["brown", brownPostit],
+  ]);
+  const fireLoc = new Map([
+    [0, 0],
+    [1, [1,2]],
+    [2, orangePostit],
+    [3, yellowPostit],
+    [4, [80,220]],
+    [5, [74,220]],
+    [6, [69,220]],
+    [7, [65,220]],
   ]);
   const navigation = useNavigation();
 
@@ -317,7 +328,10 @@ const Todo = () => {
             <Text style={styles.tasksText}>{todos?.[1]?.title}</Text>
           </ImageBackground>
         </ImageBackground>
-        <Image source={} style={styles.dogImage}/>
+        <View style={[styles.fireContainer,{bottom:(streak < 8) ? 105 - (streak * 5): 95}]}>
+          <Image source={fire} style={[styles.fireImage, {width: (streak < 8) ? streak*22 : 154 }, {height: (streak < 8) ? streak * 22 : 154 }]}/>
+        </View>
+        <Text style={styles.streaksText}> Streaks: {streak}</Text>
       </ImageBackground>
     </View>
 
@@ -449,6 +463,24 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     zIndex: 3,
   },
+  fireImage: {
+    width: 120,
+    height: 120,
+    resizeMode: "contain",
+    zIndex: 3,
+  },
+  fireContainer:{
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    alignItems:"center",
+    width:154,
+    height: 154,
+    position: 'absolute',
+    bottom:80,
+    left: 215,
+    resizeMode: "contain",
+  },
   container: {
     backgroundColor: "e5e5e5",
     padding: 15,
@@ -483,6 +515,15 @@ const styles = StyleSheet.create({
     color: "black",
     marginLeft: 40,
     marginTop: 170,
+  },
+  streaksText: {
+    fontFamily: "Gaegu",
+    fontSize: 20,
+    marginTop: 40,
+    textAlign: "left",
+    color: "black",
+    position: 'absolute',
+    bottom: 5,
   },
   input: {
     height: 48,
