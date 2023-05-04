@@ -14,6 +14,9 @@ export default StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
+  background: {
+    backgroundColor: "#FFF3EE",
+  },
   rowContainer: {
     flexDirection: "row",
     alignItems: "center",
