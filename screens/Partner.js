@@ -197,8 +197,7 @@ const Partner = () => {
                     }
                     size={24}
                     color="black"
-                    style={styles.todoIcon}
-                  />
+                    style={styles.todoIcon}                  />
                   <View style={styles.innerContainer}>
                     <Text style={styles.itemHeading}>
                       {item.title.charAt(0).toUpperCase() + item.title.slice(1)}

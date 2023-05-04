@@ -1,6 +1,20 @@
+import { useNavigation } from "@react-navigation/native";
 import { FAB } from "@rneui/themed";
+import to from "await-to-js";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  where,
+  orderBy,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  serverTimestamp,
+  querySnapshot,
+} from "firebase/firestore";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   StyleSheet,
@@ -9,13 +23,14 @@ import {
   Text,
   TextInput,
   View,
+  Keyboard,
 } from "react-native";
+import { LocaleConfig, Calendar } from "react-native-calendars";
+import { MenuProvider } from "react-native-popup-menu";
 
-// import { LocaleConfig } from "react-native-calendars";
+import TodoItem from "../components/TodoItem";
 import { auth, db } from "../config";
 import toYYYYMMDD from "../utils/date";
-import AppStyles from "../styles/AppStyles";
-import { LocaleConfig, Calendar } from "react-native-calendars";
 
 LocaleConfig.locales["en"] = {
   monthNames: [
@@ -55,7 +70,7 @@ LocaleConfig.locales["en"] = {
     "Vendredi",
     "Samedi",
   ],
-  dayNamesShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+  dayNamesShort: ["S", "M", "T", "W", "T", "F", "S"],
   today: "Aujourd'hui",
 };
 LocaleConfig.defaultLocale = "en";
@@ -64,6 +79,9 @@ const TaskCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(toYYYYMMDD(new Date()));
   const [todos, setTodos] = useState([]);
   const [user, setUser] = useState(null);
+  const [todoTitle, setTodoTitle] = useState("");
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -77,7 +95,7 @@ const TaskCalendar = () => {
   useEffect(() => {
     if (todosRef && selectedDate) {
       const unsubscribe = onSnapshot(
-        query(todosRef, where("dueAt", "==", selectedDate)),
+        query(todosRef, where("dueAt", "==", selectedDate), orderBy("index")),
         (snapshot) => {
           const todos = snapshot.docs.map((doc) => ({
             id: doc.id,
@@ -98,22 +116,69 @@ const TaskCalendar = () => {
     return null;
   }, [user]);
 
+  useEffect(() => {
+    let unsubTodos;
+
+    if (todosRef) {
+      unsubTodos = onSnapshot(
+        query(todosRef, where("status", "==", "unfinished"), orderBy("index")),
+        (querySnapshot) => {
+          const todos = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setTodos(todos);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
+
+    return unsubTodos;
+  }, [todosRef]);
+
+  const addTodo = async () => {
+    if (todoTitle) {
+      const data = {
+        title: todoTitle,
+        createdAt: serverTimestamp(),
+        status: "unfinished",
+        proof: null,
+        dueAt: toYYYYMMDD(new Date()),
+        index: todos.length,
+      };
+      const [error] = await to(addDoc(todosRef, data));
+      if (error) {
+        console.log(error);
+        return;
+      }
+      setTodoTitle("");
+      Keyboard.dismiss();
+    }
+  };
+
+  const openTodoPopup = () => {
+    navigation.navigate("AddTodo", { navigation });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Calendar
-        style={{ borderRadius: 40, elevation: 4 }}
+        style={{ borderRadius: 40, elevation: 4, margin: 25 }}
         current={selectedDate}
         onDayPress={(day) => {
           setSelectedDate(day.dateString);
         }}
-        monthFormat={'MMMM'}
-        hideArrows={true}
-        disableArrowLeft={true}
-        disableArrowRight={true}
-        hideExtraDays={true}
-        enableSwipeMonths={true}
+        monthFormat="MMMM"
+        hideArrows
+        disableArrowLeft
+        disableArrowRight
+        hideExtraDays
+        enableSwipeMonths
         theme={{
           backgroundColor: "#FFF3EE",
+          todayTextColor: "#A58263",
         }}
         markedDates={{
           [selectedDate]: {
@@ -122,14 +187,26 @@ const TaskCalendar = () => {
           },
         }}
       />
-      <FlatList
-        data={todos}
-        renderItem={({ item }) => <Text>{item.title}</Text>}
-        keyExtractor={(item) => item.id}
-      />
+      <MenuProvider style={styles.container}>
+        <FlatList
+          data={todos}
+          renderItem={({ item }) => <TodoItem todo={item} />}
+          keyExtractor={(item) => item.id}
+        />
+      </MenuProvider>
       <View style={styles.addTaskContainer}>
-        <TextInput placeholder="Add task" style={styles.input} />
-        <FAB icon={{ name: "add", color: "white" }} color="green" />
+        <TextInput
+          value={todoTitle}
+          onChangeText={setTodoTitle}
+          onSubmitEditing={addTodo}
+          placeholder="Add task"
+          style={styles.input}
+        />
+        <FAB
+          icon={{ name: todoTitle ? "check" : "add", color: "black" }}
+          onPress={todoTitle ? addTodo : openTodoPopup}
+          color="#a48365"
+        />
       </View>
     </SafeAreaView>
   );
@@ -139,9 +216,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFF3EE",
     flex: 1,
-    // marginTop: 80,
-    // marginLeft: 30,
-    // marginRight: 30,
   },
   input: {
     backgroundColor: "#D2BAA6",
@@ -159,7 +233,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 20,
+    margin: 20,
   },
 });
 

@@ -1,10 +1,14 @@
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from "@react-navigation/stack";
 import { useFonts } from "expo-font";
 import { Text } from "react-native";
 
 import Detail from "./screens/Detail";
+import AddTodo from "./screens/AddTodo";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
 import ResetPassword from "./screens/ResetPassword";
@@ -74,6 +78,11 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Detail" component={Detail} />
+          <Stack.Screen
+            name="AddTodo"
+            component={AddTodo}
+            options={{ ...TransitionPresets.ModalTransition }}
+          />
           <Stack.Screen name="User" component={User} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={Signup} />
