@@ -24,8 +24,8 @@ import {
 
 import { auth, db } from "../config";
 import MenuOption from "./MenuOption";
+import Divider from "./Divider";
 
-const Divider = () => <View style={styles.divider} />;
 const TodoItem = ({ todo }) => {
   const { title, id } = todo;
   const [user, setUser] = useState(null);
@@ -55,18 +55,11 @@ const TodoItem = ({ todo }) => {
 
   return (
     <Menu>
-      <MenuTrigger
-        customStyles={{
-          triggerWrapper: {
-            top: -20,
-          },
-        }}
-      >
-        <Text>{title}</Text>
-      </MenuTrigger>
+      <MenuTrigger text={title} />
       <MenuOptions
         customStyles={{
           optionsContainer: {
+            marginTop: 20,
             borderRadius: 10,
           },
         }}
@@ -102,9 +95,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  divider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#7F8487",
   },
 });
