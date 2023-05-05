@@ -50,7 +50,7 @@ const Home = () => {
         component={Pet}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="tennisball-outline" color={color} size={size} />
+            <Ionicons name="tennisball" color={color} size={size} />
           ),
         }}
       />

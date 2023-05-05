@@ -27,7 +27,7 @@ import MenuOption from "./MenuOption";
 import Divider from "./Divider";
 
 const TodoItem = ({ todo }) => {
-  const { title, id } = todo;
+  const { title, id, index } = todo;
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -55,7 +55,11 @@ const TodoItem = ({ todo }) => {
 
   return (
     <Menu>
-      <MenuTrigger text={title} />
+      <MenuTrigger style>
+        <Text style={styles.textTodo}>
+          {index+1}.  {title}
+        </Text>
+      </MenuTrigger>
       <MenuOptions
         customStyles={{
           optionsContainer: {
@@ -95,5 +99,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  textTodo: {
+    fontSize: 40,
+    fontFamily: "Gaegu",
+    fontWeight: "300",
+    marginLeft: 50,
   },
 });

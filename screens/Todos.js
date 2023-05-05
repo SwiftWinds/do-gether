@@ -309,6 +309,24 @@ const Todo = () => {
     }
   };
 
+  const Card = ({ idx }) => {
+    return (
+      <ImageBackground
+        source={colors.get(todos?.[idx]?.color)}
+        style={styles[`postit${idx + 1}`]}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            console.log("Pressing task...");
+            askForImage(todos?.[idx]);
+          }}
+        >
+          <Text style={styles.tasksText}>{todos?.[idx]?.title}</Text>
+        </TouchableOpacity>
+      </ImageBackground>
+    );
+  };
+
   return (
     <View style={styles.fullBackground}>
       <ImageBackground
@@ -318,18 +336,8 @@ const Todo = () => {
       >
         <Image source={pawDog} style={styles.dogImage} />
         <ImageBackground source={redPinkStack} style={styles.postitImage}>
-          <ImageBackground
-            source={colors.get(todos?.[0]?.color)}
-            style={styles.postit1}
-          >
-            <Text style={styles.tasksText}>{todos?.[0]?.title}</Text>
-          </ImageBackground>
-          <ImageBackground
-            source={colors.get(todos?.[1]?.color)}
-            style={styles.postit2}
-          >
-            <Text style={styles.tasksText}>{todos?.[1]?.title}</Text>
-          </ImageBackground>
+          <Card idx={0} onPress={() => askForImage(todos?.[0])} />
+          <Card idx={1} />
         </ImageBackground>
         <View
           style={[

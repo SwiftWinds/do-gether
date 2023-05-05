@@ -86,6 +86,27 @@ const TaskCalendar = () => {
   const [todos, setTodos] = useState([]);
   const [user, setUser] = useState(null);
   const [todoTitle, setTodoTitle] = useState("");
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true); // or some other action
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false); // or some other action
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   const navigation = useNavigation();
 
@@ -169,10 +190,37 @@ const TaskCalendar = () => {
     navigation.navigate("AddTodo", { navigation });
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: "#FFF3EE",
+      flex: 1,
+      marginTop: 20,
+    },
+    input: {
+      backgroundColor: "#D2BAA6",
+      borderRadius: 50,
+      color: "black",
+      height: 40,
+      marginRight: 30,
+      paddingLeft: 25,
+      fontSize: 23,
+      flex: 1,
+      fontWeight: "normal",
+      fontFamily: "Gaegu",
+    },
+    addTaskContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      margin: 20,
+      paddingBottom: isKeyboardVisible ? 400 : 0,
+    },
+  });
+
   return (
     <SafeAreaView style={styles.container}>
       <Calendar
-        style={{ borderRadius: 40, elevation: 4, margin: 25 }}
+        style={{ borderRadius: 50, elevation: 4, margin: 25 }}
         current={selectedDate}
         onDayPress={(day) => {
           setSelectedDate(day.dateString);
@@ -194,7 +242,7 @@ const TaskCalendar = () => {
           },
         }}
       />
-      <FlatList
+      <FlatList style={styles.tasks}
         data={todos}
         renderItem={({ item }) => <TodoItem todo={item} />}
         keyExtractor={(item) => item.id}
@@ -216,31 +264,5 @@ const TaskCalendar = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#FFF3EE",
-    flex: 1,
-    marginTop: 20,
-  },
-  input: {
-    backgroundColor: "#D2BAA6",
-    borderRadius: 50,
-    color: "black",
-    height: 40,
-    marginRight: 30,
-    paddingLeft: 25,
-    fontSize: 23,
-    flex: 1,
-    fontWeight: "normal",
-    fontFamily: "Gaegu",
-  },
-  addTaskContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    margin: 20,
-  },
-});
 
 export default TaskCalendar;

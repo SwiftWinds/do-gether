@@ -21,10 +21,9 @@ import {
   FlatList,
   Pressable,
   Button,
-  Image,
-  style,
-  ImageBackground,
+  ImageBackground
 } from "react-native";
+
 import { auth, db } from "../config";
 
 const WEB_API_KEY = "AIzaSyCJ2FY69u3jR8WMVLCT_TDrkKyqkUE2Y3k";
@@ -277,85 +276,6 @@ const Partner = () => {
     );
   }
 
-  // if (hasPartner) {
-  //   return (
-  //     <>
-  //       <View style={styles.container}>
-  //         <View style={styles.header}>
-  //           <Text style={styles.title}>Partner</Text>
-  //         </View>
-  //         <View style={styles.innerContainer}>
-  //           <FlatList
-  //             data={todos}
-  //             numColumns={1}
-  //             keyExtractor={(item) => item.id}
-  //             renderItem={({ item }) => (
-  //               <Pressable
-  //                 onPress={() => {
-  //                   if (item.status === "finished") {
-  //                     showImage(item);
-  //                   }
-  //                 }}
-  //                 style={styles.innerContainer}
-  //               >
-  //                 <Ionicons
-  //                   name={
-  //                     {
-  //                       unfinished: "md-square-outline",
-  //                       finished: "md-alert-circle-outline",
-  //                       verified: "md-checkmark-circle-outline",
-  //                     }[item.status]
-  //                   }
-  //                   size={24}
-  //                   color="black"
-  //                   style={styles.todoIcon}
-  //                 />
-  //                 <View style={styles.innerContainer}>
-  //                   <Text style={styles.itemHeading}>
-  //                     {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
-  //                   </Text>
-  //                 </View>
-  //               </Pressable>
-  //             )}
-  //           />
-  //         </View>
-  //         <Button title="Leave partnership" onPress={leavePartnership} />
-  //       </View>
-  //       <ImageView
-  //         images={images}
-  //         imageIndex={imageIndex}
-  //         visible={visible}
-  //         onRequestClose={() => setIsVisible(false)}
-  //         // footer has verify proof button
-  //         FooterComponent={({ imageIndex }) => (
-  //           <View style={styles.footerContainer}>
-  //             <TouchableOpacity
-  //               style={styles.footerButton}
-  //               onPress={() => {
-  //                 updateDoc(
-  //                   doc(
-  //                     db,
-  //                     `users/${partnerUid}/todos/${images[imageIndex].id}`
-  //                   ),
-  //                   {
-  //                     status: "verified",
-  //                   }
-  //                 );
-  //                 // close modal if no more images, else show next image
-  //                 if (imageIndex === images.length - 1) {
-  //                   setIsVisible(false);
-  //                 }
-  //               }}
-  //             >
-  //               <Text style={styles.footerText}>Verify proof</Text>
-  //             </TouchableOpacity>
-  //           </View>
-  //         )}
-  //       />
-  //     </>
-  //   );
-  // }
-
   return (
     <View style={styles.container}>
       <Text style={styles.message}>Oops! You don't have a partner yet!</Text>
@@ -378,9 +298,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    backgroundColor: "#FFE4D3",
-    paddingTop: 50,
+    backgroundColor: "e5e5e5",
+    paddingTop: 30,
+    padding: 15,
+    borderRadius: 15,
+    margin: 5,
+    marginHorizontal: 10,
     alignItems: "center",
+    justifyContent: "center",
     flexDirection: "column",
     height: "100%",
   },
