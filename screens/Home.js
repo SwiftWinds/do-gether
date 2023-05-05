@@ -9,6 +9,7 @@ import TaskCalendar from "./Calendar";
 import Partner from "./Partner";
 import Settings from "./Settings";
 import Todos from "./Todos";
+import Pet from "./Pet";
 
 const Home = () => {
   const Tab = createBottomTabNavigator();
@@ -41,6 +42,15 @@ const Home = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="calendar-day" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Pet"
+        component={Pet}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="tennisball-outline" color={color} size={size} />
           ),
         }}
       />
