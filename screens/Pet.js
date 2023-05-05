@@ -51,6 +51,7 @@ const Pet = () => {
   const yellowHealth = require("../assets/healthYellow.png");
   const navigation = useNavigation();
   const redHealth = require("../assets/redHealth.png");
+  const food = require("../assets/dogFood.png");
 
 
 
@@ -64,6 +65,7 @@ const Pet = () => {
         <Image source={sitDogSad} style={styles.dog}></Image>
         <View style={styles.dogMenu}>
             <Image source={redHealth} style={styles.health}></Image>
+            <Image source={food} style={styles.food}></Image>
         </View>
       </ImageBackground>
     </View>
@@ -196,11 +198,20 @@ const styles = StyleSheet.create({
     marginTop: -400,
   },
   health:{
+    marginTop: 30,
     width:300,
-    height:100,
+    height:50,
     marginLeft: 30,
     alignSelf: "flex-start",
     sIndex: 4,
+  },
+  food:{
+    marginTop:-35,
+    width:200,
+    height:200,
+    marginLeft: 80,
+    sIndex: 4,
+    resizeMode: "contain"
   },
   dogImage: {
     marginTop: 50,
