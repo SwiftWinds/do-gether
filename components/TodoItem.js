@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   textTodo: {
-    fontSize: 40,
+    fontSize: 36,
     fontFamily: "Gaegu",
     fontWeight: "300",
     marginLeft: 50,

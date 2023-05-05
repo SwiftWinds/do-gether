@@ -37,6 +37,9 @@ import {
   Pressable,
   Image,
   ImageBackground,
+  Animated,
+  PanResponder,
+  Dimensions,
 } from "react-native";
 
 import { db, auth, storage } from "../config";
@@ -84,6 +87,8 @@ const Todo = () => {
     [7, [65, 220]],
   ]);
   const navigation = useNavigation();
+
+  const { width, height } = Dimensions.get("window");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

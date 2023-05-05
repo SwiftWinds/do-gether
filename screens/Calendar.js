@@ -220,7 +220,7 @@ const TaskCalendar = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Calendar
-        style={{ borderRadius: 50, elevation: 4, margin: 25 }}
+        style={{ borderRadius: 25, elevation: 4, margin: 25, paddingBottom: 10 }}
         current={selectedDate}
         onDayPress={(day) => {
           setSelectedDate(day.dateString);

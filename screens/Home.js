@@ -26,7 +26,13 @@ const Home = () => {
   }, []);
 
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { backgroundColor: "#FFE9CC" },
+        tabBarActiveTintColor: "#8A624A",
+      }}
+    >
       <Tab.Screen
         name="Todos"
         component={Todos}

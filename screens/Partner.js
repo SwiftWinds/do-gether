@@ -394,8 +394,8 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     height: 40,
-    borderRadius: 5,
-    backgroundColor: "#788eec",
+    borderRadius: 7,
+    backgroundColor: "#A58263",
     width: 150,
     alignItems: "center",
     justifyContent: "center",
